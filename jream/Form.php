@@ -52,13 +52,9 @@ class Form
 	
 	/**
 	 * __construct - Instanatiates the Validate object 
-	 * 
-	 * @param array $mimic For mimicking a $_POST, skipping the values
 	 */
-	public function __construct($mimic) 
-	{
-		$this->_mimic = $mimic;
-		
+	public function __construct() 
+	{		
 		$this->_format = new Form\Format();
 		$this->_validate = new Form\Validate();
 	}
