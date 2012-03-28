@@ -110,49 +110,6 @@ class Database
 		
 		return $result;		
 	}
-//	
-//	/**
-//	 * select - run a select query
-//	 * 
-//	 * @param string $qry Build a query with ? marks in the proper order,
-//	 *		eg: SELECT ?, ? FROM tablename WHERE userid = ?
-//	 * 
-//	 * @param array $bindParams Fields The fields to select to replace the ? marks,
-//	 *		eg: array('email', 'password', 25);
-//	 * )
-//	 * @param integer $cacheTime Time to keep inside of memcache
-//	 * @return type 
-//	 */
-//	public function select_old($query, $bindParams, $cacheTime = null)
-//	{	
-//		
-//		/** Create a unique memcached code */
-//		$memcacheCode = sha1($query . implode('|', $bindParams));
-//
-////		$existing = $this->_mc->get($memcacheCode);
-//		
-//		if (isset($existing)) 
-//		{
-//			echo 'fetched mc record';
-//			return $existing;
-//		} 
-//		
-//		else 
-//		{
-//			$sth = $this->_pdo->prepare($query);
-//			$sth->execute($bindParams);
-//		
-//			$this->_handleError();
-//			
-//			$result = $sth->fetchAll(PDO::FETCH_OBJ);	
-//			
-////			$this->_mc->add($memcacheCode, $result, MEMCACHE_COMPRESSED, $cacheTime);
-//		}
-//		
-//		
-//		return $result;
-//
-//	}
 
 	/**
 	* insert - Convenience method to insert data

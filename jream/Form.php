@@ -46,27 +46,63 @@ class Form
 	private $_currentRecord = null;
 	
 	/**
-	 * __construct - Instanatiates the Validate object 
+	 * @var mixed $_mimic Used for passing artificial $_POST requests
 	 */
-	public function __construct() 
+	private $_mimic = null;
+	
+	/**
+	 * __construct - Instanatiates the Validate object 
+	 * 
+	 * @param array $mimic For mimicking a $_POST, skipping the values
+	 */
+	public function __construct($mimic) 
 	{
+		$this->_mimic = $mimic;
+		
 		$this->_format = new Form\Format();
 		$this->_validate = new Form\Validate();
 	}
 	
 	/**
 	 * post - Retrieves POST data and saves it to the object 
-	 * @TODO: CHANGE REQUEST TO POST LATER
 	 *
 	 * @param string $name The name of the field to post
 	 * @param string $required (Default = false) When set to true && the value is NULL: Unset the value internally and do validate.
 	 */
 	public function post($name, $required = false)
 	{
+	
+//		BETA Functionality -- There is a cleaner way to mimic a post from a model
+//		
+//		if (is_array($this->_mimic) && isset($this->_mimic[$name]))
+//		{
+//			if (isset($this->_mimic[$key]))
+//			$input = $this->_mimic[$name];
+//			
+//			else
+//			throw new \Exception('Passing a mimic value that is not setup in your Form Request');
+//		}
+//		else
+//		{
+//			$input = isset($_POST[$name]) ? trim($_POST[$name]) : null;
+//		}
+		
 		/** 
 		 * Sanitize the post data (Only allow ASCII up to 127 for now) 
 		 */
-		$input = isset($_REQUEST[$name]) ? trim($_REQUEST[$name]) : null;
+		if (is_array($this->_mimic) && isset($this->_mimic[$name]))
+		{
+			if (isset($this->_mimic[$key]))
+			$input = $this->_mimic[$name];
+			
+			else
+			throw new \Exception('Passing a mimic value that is not setup in your Form Request');
+		}
+		else
+		{
+			$input = isset($_POST[$name]) ? trim($_POST[$name]) : null;
+		}
+		
 		$input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
 
 		/**
@@ -117,7 +153,8 @@ class Form
 	*/
 	public function format($type)
 	{
-		$this->_formData[$name] = $this->_format->call($type, $this->_formatData[$name]);
+		$key = $this->_currentRecord['key'];
+		$this->_formData[$key] = $this->_format->call($type, $this->_currentRecord['value']);
 		return $this;
 	}
 	
@@ -157,7 +194,7 @@ class Form
 	public function val($action, $param = array())
 	{
 		if (!is_array($param)) {
-			throw new Exception('Your value has to be an array.');
+			throw new \Exception('Your value has to be an array.');
 		}
 		
 		/**
@@ -252,8 +289,14 @@ class Form
 	 */
 	public function get($key = null)
 	{
-		if (isset($this->_formData[$key]))
-		return $this->_formData[$key];
+		if ($key != null)
+		{
+			if (isset($this->_formData[$key]))
+			return $this->_formData[$key];	
+
+			else
+			return false;			
+		}
 		
 		else
 		return $this->_formData;

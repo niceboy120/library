@@ -33,7 +33,8 @@ class Autoload
 	*/
 	public function __construct($dir)
 	{
-		$this->_dir = $dir;
+		/** Make sure there is always a trailing slash */
+		$this->_dir = rtrim($dir, '/').'/';
 		
 		/** Prevent other autoloaders from collision */
 		$beingLoaded = spl_autoload_functions();
@@ -61,31 +62,29 @@ class Autoload
 		if ($this->_loadCalled == true)
 		return;
 		
-		$sections = array();
+		/** Get the autoload classname without the namespace */
+		$classname = end(explode('\\', __CLASS__));
 
 		foreach(glob($this->_dir . '*') as $file)  
 		{
-
-			/** Prevent this file from being loaded */
-			if ($file == $this->_dir . 'Autoload.php')
+			/** Don't load the autoloader class */
+			if ($file == $this->_dir . $classname . '.php')
 			continue;
-			
+
+			/** Require the needed files  */
 			if (!is_dir($file))
-			array_push($sections, $file);
+			require $file;
+			
 			else
 			{
 				foreach(glob($file . '/*') as $subfile)
 				{
+					/** We are only going one folder deep */
 					if (!is_dir($subfile))
-					array_push($sections, $subfile);
+					require $subfile;
 				}
 			}
-		}
 
-		/** Iterate: Require each Object */
-		foreach ($sections as $dir)
-		{
-			require $dir;
 		}
 		
 		$this->_loadCalled = true;

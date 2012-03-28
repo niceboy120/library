@@ -18,64 +18,28 @@
  */
 namespace jream;
 class Output {
-
+	
 	/**
-	* json - Outputs data in JSON format
-	* @param boolean $success Was is successful?
-	* @param string $data Either the error message or the data to output
-	*/
-	public static function json($success, $data = 'There was an error') 
+	 * success - Standard JSON Output (success, errorMessage, data)
+	 * 
+	 * @param string $data Content to encode
+	 */
+	public static function success($data)
 	{
-		$success = (boolean) $success;
-		
-		if ($success == 1) {
-			$json = json_encode(array('error' => 0, 'errorMessage' => null, 'data' => $data));
-		} elseif ($success == 0) {
-			$json = json_encode(array('error' => 1, 'errorMessage' => $data));
-		}
-		
 		header('Content-type: application/json');
-		echo $json;
-		exit;
+		echo json_encode(array('success' => 1, 'errorMessage' => null, 'data' => $data));
 	}
 	
 	/**
-	 * error - Outputs an error in an attractive HTML format (For killing a page). Uses systemError style
-	 * This should only be used BEFORE any HTML is loaded, it sets up the entire page.
-	 * @param string $summary A very short summary of where the problem can be resolved.
-	 * @param string $details The details as to why there is a problem.
+	 * error - Standard JSON Output (success, errorMessage, data)
+	 * 
+	 * @param string $errorMessage 
 	 */
-	public static function error($summary, $details)
-	{	
-		$output = "
-		<!doctype html>
-		<html>
-		<head>
-			<title>System Error</title>
-			<link rel='stylesheet' href='". URL ."public/css/default/reset.css' />
-			<link rel='stylesheet' href='". URL ."public/css/default/framework.css' />
-			<link rel='stylesheet' href='". URL ."public/css/default/misc.css' />
-			<link rel='shortcut icon' href='". URL . "public/images/favicon.png' />
-		</head>
-		<body>
-			<div id='systemErrorWrapper'>
-				<div id='systemErrorHeader'>
-					<h1>System Error</h1>
-				</div>
-				<div id='systemErrorContent'>
-					
-					<div id='systemErrorContentSummary'>$summary</div>
-				
-					<div id='systemErrorContentDetails'>
-						$details
-					</div>
-				</div>
-			</div>
-		</body>
-		</html>";
-		
-		echo $output;
-		die;
+	public function error($errorMessage)
+	{
+		header('Content-type: application/json');
+		echo json_encode(array('success' => 0, 'errorMessage' => $errorMessage, 'data' => null));
 	}
+	
 
 }

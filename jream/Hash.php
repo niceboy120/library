@@ -20,9 +20,9 @@ namespace jream;
 class Hash
 {
 	
-	
 	/**
 	 * create - Create an encryption key with a special algorithm and key
+	 * 
 	 * @param string $algo The algorithm to use
 	 * @param string $string The string to encrypt
 	 * @param string $key A salt or HASH_HMAC to apply to the encryption
