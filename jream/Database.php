@@ -31,128 +31,57 @@ class Database
 	private $_mc;
 	
 	/**
-	 * @var resource $_instance For a singleton
-	 */
-	protected static $_instance = null;
-	
-	/**
 	 * __construct - Initializes a PDO connection
 	 * 
-	 * @param array $setting An associative array containing the connection settings,
-	 *		Required: type, name, host, user, pass
+	 * @param array $db An associative array containing the connection settings,
+	 *
+	 *	$db = array(
+	 *		'type' => 'mysql'
+	 *		,'host' => 'localhost'
+	 *		,'name' => 'test'
+	 *		,'user' => 'root'
+	 *		,'pass' => ''
+	 *	);
 	 */
-	protected function __construct()
+	public function __construct($db)
 	{
 		try {
-//			$this->_mc = new Memcache();
-//			$this->_mc->connect('127.0.0.1', 11211);
-			
-			$this->_pdo = new \PDO('mysql:dbname='.DB_NAME.';host='.DB_HOST, DB_USER, DB_PASS);
+			$this->_pdo = new \PDO("{$db['type']}:host={$db['host']};dbname={$db['name']}", $db['user'], $db['pass']);
 		} catch (PDOException $e) {
-			die('Problem Connecting: ' . $e->getMessage());
+			die($e->getMessage());
 		}
-	}
-	
-	/**
-	 * instance - Fetch the database instance (Singleton)
-	 * 
-	 * @return resource
-	 */
-	public static function instance()
-	{
-		if (null == self::$_instance) {
-			self::$_instance = new self();
-		}
-		
-		return self::$_instance;
 	}
 	
 	/**
 	 * select - Run & Return a Select Query
 	 * 
 	 * @param string $query Build a query with ? marks in the proper order,
-	 *		eg: SELECT ?, ? FROM tablename WHERE userid = ?
+	 *		eg: SELECT :email, :password FROM tablename WHERE userid = :userid
 	 * 
-	 * @param array $bindParams Fields The fields to select to replace the ? marks,
-	 *		eg: array('email', 'password', 25);
+	 * @param array $bindParams Fields The fields to select to replace the :colin marks,
+	 *		eg: array('email' => 'email', 'password' => 'password', 'userid' => 200);
 	 * )
 	 * @param integer $cacheTime Time to keep inside of memcache
 	 * @return type 
 	 */
 	public function select($query, $bindParams = array(), $cacheTime = null)
 	{
-		/** Create a unique memcached code */
-		$memcacheCode = sha1($query . implode('|', $bindParams));		
-		$cacheTime;
-//		$existing = $this->_mc->get($memcacheCode);
-		
-		if (isset($existing)) 
+
+		$sth = $this->_pdo->prepare($query);
+		foreach($bindParams as $key => $value)
 		{
-			echo 'fetched mc record';
-			return $existing;
+			$sth->bindValue(":$key", $value);
 		}
-		else 
-		{
-			$sth = $this->_pdo->prepare($query);
-			foreach($bindParams as $key => $value)
-			{
-				$sth->bindValue(":$key", $value);
-			}
+	
+		$sth->execute();
+	
+		$this->_handleError();
 		
-			$sth->execute();
-		
-			$this->_handleError();
-			
-			$result = $sth->fetchAll(\PDO::FETCH_ASSOC);	
-			
-//			$this->_mc->add($memcacheCode, $result, MEMCACHE_COMPRESSED, $cacheTime);
-		}
-		
+		$result = $sth->fetchAll(\PDO::FETCH_ASSOC);	
+
 		return $result;		
 	}
-//	
-//	/**
-//	 * select - run a select query
-//	 * 
-//	 * @param string $qry Build a query with ? marks in the proper order,
-//	 *		eg: SELECT ?, ? FROM tablename WHERE userid = ?
-//	 * 
-//	 * @param array $bindParams Fields The fields to select to replace the ? marks,
-//	 *		eg: array('email', 'password', 25);
-//	 * )
-//	 * @param integer $cacheTime Time to keep inside of memcache
-//	 * @return type 
-//	 */
-//	public function select_old($query, $bindParams, $cacheTime = null)
-//	{	
-//		
-//		/** Create a unique memcached code */
-//		$memcacheCode = sha1($query . implode('|', $bindParams));
-//
-////		$existing = $this->_mc->get($memcacheCode);
-//		
-//		if (isset($existing)) 
-//		{
-//			echo 'fetched mc record';
-//			return $existing;
-//		} 
-//		
-//		else 
-//		{
-//			$sth = $this->_pdo->prepare($query);
-//			$sth->execute($bindParams);
-//		
-//			$this->_handleError();
-//			
-//			$result = $sth->fetchAll(PDO::FETCH_OBJ);	
-//			
-////			$this->_mc->add($memcacheCode, $result, MEMCACHE_COMPRESSED, $cacheTime);
-//		}
-//		
-//		
-//		return $result;
-//
-//	}
+
 
 	/**
 	* insert - Convenience method to insert data
