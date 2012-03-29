@@ -82,7 +82,6 @@ class Database
 		return $result;		
 	}
 
-
 	/**
 	* insert - Convenience method to insert data
 	*
