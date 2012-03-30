@@ -1,20 +1,11 @@
 <?php
 /**
  * @author		Jesse Boyer <contact@jream.com>
- * @copyright	Copyright (c), 2011-12 Jesse Boyer
+ * @copyright	Copyright (C), 2011-12 Jesse Boyer
  * @license		GNU General Public License 3 (http://www.gnu.org/licenses/)
+ *				Refer to the LICENSE file distributed within the package.
+ *
  * @link		http://jream.com
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details:
- * http://www.gnu.org/licenses/
  */
 namespace jream;
 class Form
@@ -52,9 +43,12 @@ class Form
 	
 	/**
 	 * __construct - Instanatiates the Validate object 
+	 *
+	 * @param mixed $mimic (Optional) Pass an associative array matching the form->post() names to mimic a POST
 	 */
-	public function __construct() 
+	public function __construct($mimic = null)
 	{		
+		$this->_mimic = $mimic;
 		$this->_format = new Form\Format();
 		$this->_validate = new Form\Validate();
 	}
@@ -66,29 +60,13 @@ class Form
 	 * @param string $required (Default = false) When set to true && the value is NULL: Unset the value internally and do validate.
 	 */
 	public function post($name, $required = false)
-	{
-	
-//		BETA Functionality -- There is a cleaner way to mimic a post from a model
-//		
-//		if (is_array($this->_mimic) && isset($this->_mimic[$name]))
-//		{
-//			if (isset($this->_mimic[$key]))
-//			$input = $this->_mimic[$name];
-//			
-//			else
-//			throw new \Exception('Passing a mimic value that is not setup in your Form Request');
-//		}
-//		else
-//		{
-//			$input = isset($_POST[$name]) ? trim($_POST[$name]) : null;
-//		}
-		
+	{	
 		/** 
 		 * Sanitize the post data (Only allow ASCII up to 127 for now) 
 		 */
 		if (is_array($this->_mimic) && isset($this->_mimic[$name]))
 		{
-			if (isset($this->_mimic[$key]))
+			if (isset($this->_mimic[$name]))
 			$input = $this->_mimic[$name];
 			
 			else
@@ -181,77 +159,6 @@ class Form
 		return $this;
 	}
 	
-	/**
-	 * val - Validates OR formats the current post item;
-	 * 
-	 * @param string $action
-	 * @param array $param If validating length, do .. ->val('length', array(1, 4));
-	 */
-	public function val($action, $param = array())
-	{
-		if (!is_array($param)) {
-			throw new \Exception('Your value has to be an array.');
-		}
-		
-		/**
-		 * From the post() method if this is null then then this is not required.
-		 */
-		if ($this->_currentRecord == null) 
-		{
-			return $this;
-		}
-		
-		/** The internal record data */
-		$key	= $this->_currentRecord['key'];
-		$value	= $this->_currentRecord['value'];
-	
-		
-		/** Total parameters passed */
-		$paramCount = count($param);
-		
-		switch($action) {
-			
-			/**
-			 * Validators 
-			 */
-			case 'match':
-				if ($value !== $param[0]) {
-					$this->_errorData[$key] = "does not match";
-				}
-				
-				break;
-					
-			case 'len':
-			case 'length':
-				$len = strlen($value);
-				
-				if ($len < $param[0] || $len > $param[1]) {
-					$this->_errorData[$key] = "must be between $param[0] and $param[1] characters.";
-				}	
-				break;
-
-			case 'number':
-			case 'digit':
-				if (!is_numeric($value)) {
-					$this->_errorData[$key] = 'must be numeric.';
-				}
-				break;
-			
-			case 'letter':
-			case 'alpha':
-				if (!ctype_alpha($value)) {
-					$this->_errorData[$key] = 'must be A-Z only.';
-				}
-				break;
-				
-			case 'email':
-				if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-					$this->_errorData[$key] = 'invalid email format.';
-				}
-		
-		return $this;
-		}
-	}
 	
 	/**
 	 * submit - Processes the entire form and gather errors if any exist
@@ -273,7 +180,8 @@ class Form
 			}
 			$output = rtrim($output, "\n");
 			
-			throw new \Exception($output);
+			/** Throw our custom Form Exception for outputting a string or error */
+			throw new Form\Exception($output, $this->_errorData);
 		}
 	}
 	
@@ -315,7 +223,7 @@ class Form
 	}
 	
 	/**
-	 * dump - Debug & See what is inside the object quickly
+	 * dump - Debug & see what is inside the object quickly
 	 */
 	public function dump()
 	{
