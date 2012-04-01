@@ -7,9 +7,9 @@
  *
  * @link		http://jream.com
  */
-require_once 'library/jream/Autoload.php';
+require_once 'jream/Autoload.php';
 
-new jream\Autoload('library/jream/');
+new jream\Autoload('jream/');
 
 $db = array(
 	'type' => 'mysql'

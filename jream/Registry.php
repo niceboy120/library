@@ -37,7 +37,7 @@ class Registry
 	 */
 	public static function get($key)
 	{
-		if (isset(self::$_record[$key])) ?
+		if (isset(self::$_record[$key]))
 		return self::$_record[$key];
 
 		else 

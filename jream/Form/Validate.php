@@ -10,17 +10,17 @@
 namespace jream\Form;
 class Validate
 {
-	public function length($value, $param)
-	{
 	
-		if (!is_array($param) || count($param) != 2)
-		throw new Exception(__CLASS__ . ': Length Parameter must be an array of 2.');
-
-		$len = strlen($value);
-
-		if ($len < $param[0] || $len > $param[1]) {
-			return "must be between $param[0] and $param[1] characters.";
-		}
+	public function minlength($value, $param)
+	{
+		if (strlen($value) <= $param)
+		return "must be atleast $param in length";
+	}
+	
+	public function maxlength($value, $param)
+	{
+		if (strlen($value) > $param)
+		return "must be no more than $param in length";
 	}
 	
 	public function match($value, $param)
@@ -28,6 +28,11 @@ class Validate
 		if ($value !== $param[0]) {
 			return "does not match";
 		}
+	}
+	
+	public function matchOr($value, $param)
+	{
+		//array req..  if in array..
 	}
 	
 	
@@ -41,7 +46,7 @@ class Validate
 	public function alpha($value)
 	{
 		if (!ctype_alpha($value)) {
-			return 'must be A-Z only.';
+			return 'must be alphabetical only.';
 		}
 	}
 	
