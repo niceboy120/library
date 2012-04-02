@@ -6,6 +6,7 @@
  *				Refer to the LICENSE file distributed within the package.
  *
  * @link		http://jream.com
+ * @category	Form
  */
 namespace jream;
 class Form
@@ -37,18 +38,18 @@ class Form
 	private $_currentRecord = null;
 	
 	/**
-	 * @var mixed $_mimic Used for passing artificial $_POST requests
+	 * @var mixed $_mimicPost Used for passing artificial $_POST requests
 	 */
-	private $_mimic = null;
+	private $_mimicPost = null;
 	
 	/**
 	 * __construct - Instanatiates the Validate object 
 	 *
-	 * @param mixed $mimic (Optional) Pass an associative array matching the form->post() names to mimic a POST
+	 * @param mixed $mimicPost (Optional) Pass an associative array matching the form->post() names to mimic a POST
 	 */
-	public function __construct($mimic = null)
+	public function __construct($mimicPost = null)
 	{		
-		$this->_mimic = $mimic;
+		$this->_mimicPost = $mimicPost;
 		$this->_format = new Form\Format();
 		$this->_validate = new Form\Validate();
 	}
@@ -64,13 +65,14 @@ class Form
 		/** 
 		 * Sanitize the post data (Only allow ASCII up to 127 for now) 
 		 */
-		if (is_array($this->_mimic) && isset($this->_mimic[$name]))
+		if (is_array($this->_mimicPost) && isset($this->_mimicPost[$name]))
 		{
-			if (isset($this->_mimic[$name]))
-			$input = $this->_mimic[$name];
+			if (isset($this->_mimicPost[$name]))
+			$input = $this->_mimicPost[$name];
 			
+			/** Note: Using jream Exception (Within jream namespace) */
 			else
-			throw new \Exception('Passing a mimic value that is not setup in your Form Request');
+			throw new Exception('Passing a mimic value that is not setup in your Form Request'); 
 		}
 		else
 		{
@@ -180,8 +182,9 @@ class Form
 			}
 			$output = rtrim($output, "\n");
 			
-			/** Throw our custom Form Exception for outputting a string or error */
-			throw new Form\Exception($output, $this->_errorData);
+			/** Note: Using jream Exception (Within jream namespace) */
+			/** Throw our custom Form Exception for outputting a string or array */
+			throw new Exception($output, $this->_errorData);
 		}
 	}
 	

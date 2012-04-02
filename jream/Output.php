@@ -11,7 +11,18 @@ namespace jream;
 class Output {
 	
 	/**
-	 * success - Standard JSON Output (success, errorMessage, data)
+	 * json - Standard JSON Output
+	 * 
+	 * @param mixed $data Content to encode
+	 */
+	public static function json($data)
+	{
+		header('Content-type: application/json');
+		echo json_encode($data);
+	}
+	
+	/**
+	 * success - Pre-Packaged JSON Output (success, errorMessage, data)
 	 * 
 	 * @param string $data Content to encode
 	 */
@@ -22,7 +33,7 @@ class Output {
 	}
 	
 	/**
-	 * error - Standard JSON Output (success, errorMessage, data)
+	 * error - Pre-Packaged JSON Output (success, errorMessage, data)
 	 * 
 	 * @param string $errorMessage 
 	 */
@@ -32,5 +43,12 @@ class Output {
 		echo json_encode(array('success' => 0, 'errorMessage' => $errorMessage, 'data' => null));
 	}
 	
+	/**
+	 * custom - Output custom type (Would this ever be useful?)
+	 */
+	public function custom()
+	{
+		
+	}
 
 }

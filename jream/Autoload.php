@@ -6,6 +6,9 @@
  *				Refer to the LICENSE file distributed within the package.
  *
  * @link		http://jream.com
+ * @example
+ * require_once '/jream/Autoload.php';
+ * new jream\Autoload('/jream/');
  */
 namespace jream;
 class Autoload

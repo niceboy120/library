@@ -6,10 +6,28 @@
  *				Refer to the LICENSE file distributed within the package.
  *
  * @link		http://jream.com
+ * @category	Database
+ * @example
+ * try {
+ *    $db = new jream\Database($db);
+ *    $db->select("SELECT * FROM user WHERE id = :id", array('id', 25));
+ *    $db->insert("user", array('name' => 'jesse'));
+ *    $db->update("user", array('name' => 'juicy), "id = '25'");
+ *    $db->delete("user", "id = '25'");
+ * } catch (Exception $e) {
+ *    echo $e->getMessage();
+ * }
  */
 namespace jream;
 class Database
 {
+	/**
+	 * What's the benefit to creating a new instantiation versus extending it?
+	 * Seems that I must redeclare a lot of methods to use within the standard PDO package.
+	 * If the $_pdo object variable was public, I'd have to make longer calls, such as
+	 * $db->pdo->function(); rather than $db->function(); 
+	 * Is this only for a potential singleton that I am not very interested in since a Registry does well enough?
+	 */
 	
 	/**
 	 * @var resource $_pdo The pdo object
@@ -47,12 +65,13 @@ class Database
 	 * @param array $bindParams Fields The fields to select to replace the :colin marks,
 	 *		eg: array('email' => 'email', 'password' => 'password', 'userid' => 200);
 	 * )
-	 * @param integer $cacheTime Time to keep inside of memcache
-	 * @return type 
+	 * @param integer $cacheTime Time to keep inside of memcache (Not Implemented)
+	 * 
+	 * @return array
 	 */
 	public function select($query, $bindParams = array(), $cacheTime = null)
 	{
-
+		/** Run Query and Bind the Values */
 		$sth = $this->_pdo->prepare($query);
 		foreach($bindParams as $key => $value)
 		{
@@ -63,23 +82,28 @@ class Database
 	
 		$this->_handleError();
 		
-		$result = $sth->fetchAll(\PDO::FETCH_ASSOC);	
-
-		return $result;		
+		return $sth->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 	/**
-	* insert - Convenience method to insert data
-	*
-	* @param string $table	The table to insert into
-	* @param array $data	An associative array of data: field => value
-	*/
-	public function insert($table, $data)
+	 * insert - Convenience method to insert data
+	 *
+	 * @param string $table	The table to insert into
+	 * @param array $data	An associative array of data: field => value
+	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
+	 */
+	public function insert($table, $data, $showSQL = false)
 	{
 		$insertString = $this->_prepareInsertString($data);
 
+		
+		/** Output the code for Debugging */
+		if ($showSQL == true)
+		echo "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
+		
+		
+		/** Run Query and Bind the Values */
 		$sth = $this->_pdo->prepare("INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})");
-
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -92,25 +116,31 @@ class Database
 	}
 	
 	/**
-	* update - Convenience method to update the database
-	* 
-	* @param string $table The table to update
-	* @param array $data An associative array of fields to change: field => value
-	* @param string $where A condition on where to apply this update
-	*/
-	public function update($table, $data, $where)
+	 * update - Convenience method to update the database
+	 * 
+	 * @param string $table The table to update
+	 * @param array $data An associative array of fields to change: field => value
+	 * @param string $where A condition on where to apply this update
+	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
+	 */
+	public function update($table, $data, $where, $showSQL = false)
 	{
 		$updateString = $this->_prepareUpdateString($data);
 
+		/** Output the code for Debugging */
+		if ($showSQL == true)
+		echo "UPDATE $table SET $updateString WHERE $where";
+		
+		/** Run Query and Bind the Values */
 		$sth = $this->_pdo->prepare("UPDATE $table SET $updateString WHERE $where");
-
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
 		}
 
-		$sth->execute();
+		$result = $sth->execute();
 		$this->_handleError();
+		return $result;
 	}
 	
 	/**
@@ -118,10 +148,15 @@ class Database
 	*
 	* @param string $table The table to delete from
 	* @param string $where A condition on where to apply this call
+	* @param boolean $showSQL (Default = false) Show the SQL Code being processed?
+	* 
 	* @return boolean
 	*/
-	public function delete($table, $where)
+	public function delete($table, $where, $showSQL = false)
 	{
+		if ($showSQL == true)
+		echo "DELETE FROM $table WHERE $where";
+		
 		return $this->_pdo->exec("DELETE FROM $table WHERE $where");
 	}
 	
@@ -130,19 +165,33 @@ class Database
 	 */
 	public function beginTransaction()
 	{
-		$this->_pdo->beginTransaction();
+		return $this->_pdo->beginTransaction();
 	}
 	
 	public function rollBack()
 	{
-		$this->_pdo->rollBack();
+		return $this->_pdo->rollBack();
 	}
 	
 	public function commit()
 	{
-		$this->_pdo->commit();
+		return $this->_pdo->commit();
 	}
 	
+	public function inTransaction()
+	{
+		return $this->_pdo->inTransaction();
+	}
+	
+	public function errorCode()
+	{
+		return $this->errorCode();
+	}
+	
+	public function setAttribute($attr, $val)
+	{
+		return $this->_pdo->setAttribute($attr, $val);
+	}
 	
 	/**
 	* id - Gets the last inserted ID
