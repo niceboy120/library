@@ -11,13 +11,27 @@ require_once 'jream/Autoload.php';
 
 new jream\Autoload('jream/');
 
-$db = array(
+$config = array(
 	'type' => 'mysql'
 	,'host' => 'localhost'
-	,'name' => 'test'
+	,'name' => 'jream_test'
 	,'user' => 'root'
 	,'pass' => ''
 );
 
+echo '<pre>';
 
-new jream\Database($db);
+
+$db = new jream\Database($config);
+
+$db->insert('user', array('name' => 'Jesse'));
+$db->update('user', array('name' => 'Other'), "id = '2'");
+$db->delete('user', "id = '1'");
+
+$db->setFetchMode(\PDO::FETCH_ASSOC);
+$result = $db->select('SELECT * FROM user', array());
+print_r($result);
+
+$db->setFetchMode(\PDO::FETCH_CLASS);
+$result = $db->select('SELECT * FROM user', array());
+print_r($result);

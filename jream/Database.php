@@ -19,21 +19,14 @@
  * }
  */
 namespace jream;
-class Database
+class Database extends \PDO
 {
-	/**
-	 * What's the benefit to creating a new instantiation versus extending it?
-	 * Seems that I must redeclare a lot of methods to use within the standard PDO package.
-	 * If the $_pdo object variable was public, I'd have to make longer calls, such as
-	 * $db->pdo->function(); rather than $db->function(); 
-	 * Is this only for a potential singleton that I am not very interested in since a Registry does well enough?
+
+	/** 
+	 * @var constant $_fetchMode The select statement fetch mode 
 	 */
-	
-	/**
-	 * @var resource $_pdo The pdo object
-	 */
-	private $_pdo;
-	
+	private $_fetchMode = \PDO::FETCH_ASSOC;
+	 
 	/**
 	 * __construct - Initializes a PDO connection
 	 * 
@@ -50,29 +43,39 @@ class Database
 	public function __construct($db)
 	{
 		try {
-			$this->_pdo = new \PDO("{$db['type']}:host={$db['host']};dbname={$db['name']}", $db['user'], $db['pass']);
+			parent::__construct("{$db['type']}:host={$db['host']};dbname={$db['name']}", $db['user'], $db['pass']);
 		} catch (PDOException $e) {
 			die($e->getMessage());
 		}
 	}
 	
 	/**
+	 * setFetchMode - Change the default mode for fetching a query
+	 *
+	 * @param constant $fetchMode Use the PDO fetch constants, eg: \PDO::FETCH_CLASS
+	 */
+	public function setFetchMode($fetchMode)
+	{
+		$this->_fetchMode = $fetchMode;
+	}
+	
+	/**
 	 * select - Run & Return a Select Query
 	 * 
 	 * @param string $query Build a query with ? marks in the proper order,
-	 *		eg: SELECT :email, :password FROM tablename WHERE userid = :userid
+	 *	eg: SELECT :email, :password FROM tablename WHERE userid = :userid
 	 * 
 	 * @param array $bindParams Fields The fields to select to replace the :colin marks,
-	 *		eg: array('email' => 'email', 'password' => 'password', 'userid' => 200);
-	 * )
-	 * @param integer $cacheTime Time to keep inside of memcache (Not Implemented)
+	 *	eg: array('email' => 'email', 'password' => 'password', 'userid' => 200);
 	 * 
+	 * @param integer $cacheTime Time to cache (NOT READY YET)
+	 *
 	 * @return array
 	 */
-	public function select($query, $bindParams = array(), $cacheTime = null)
+	public function select($query, $bindParams = array(), $cacheTime = false)
 	{
 		/** Run Query and Bind the Values */
-		$sth = $this->_pdo->prepare($query);
+		$sth = $this->prepare($query);
 		foreach($bindParams as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -80,9 +83,11 @@ class Database
 	
 		$sth->execute();
 	
+		/** Throw an exception for an error */
 		$this->_handleError();
 		
-		return $sth->fetchAll(\PDO::FETCH_ASSOC);
+		/** Automatically return all the goods */
+		return $sth->fetchAll($this->_fetchMode);
 	}
 
 	/**
@@ -94,25 +99,27 @@ class Database
 	 */
 	public function insert($table, $data, $showSQL = false)
 	{
+	
+		/** Prepare SQL Code */
 		$insertString = $this->_prepareInsertString($data);
 
-		
 		/** Output the code for Debugging */
-		if ($showSQL == true)
-		echo "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
-		
+		if ($showSQL) echo "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
 		
 		/** Run Query and Bind the Values */
-		$sth = $this->_pdo->prepare("INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})");
+		$sth = $this->prepare("INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})");
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
 		}
 
 		$sth->execute();
+		
+		/** Throw an exception for an error */
 		$this->_handleError();
 		
-		return $this->id();
+		/** Return the insert id */
+		return $this->lastInsertId();
 	}
 	
 	/**
@@ -125,14 +132,17 @@ class Database
 	 */
 	public function update($table, $data, $where, $showSQL = false)
 	{
+		/** Build the Update String */
 		$updateString = $this->_prepareUpdateString($data);
 
-		/** Output the code for Debugging */
-		if ($showSQL == true)
-		echo "UPDATE $table SET $updateString WHERE $where";
+		/** Prepare SQL Code */
+		$sql = "UPDATE $table SET $updateString WHERE $where";
+		
+		/** Optionally output the SQL */
+		if ($showSQL) echo $sql;
 		
 		/** Run Query and Bind the Values */
-		$sth = $this->_pdo->prepare("UPDATE $table SET $updateString WHERE $where");
+		$sth = $this->prepare("UPDATE $table SET $updateString WHERE $where");
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -154,45 +164,15 @@ class Database
 	*/
 	public function delete($table, $where, $showSQL = false)
 	{
-		if ($showSQL == true)
-		echo "DELETE FROM $table WHERE $where";
+		/** Prepare SQL Code */
+		$sql = "DELETE FROM $table WHERE $where";
+	
+		/** Optionally output the SQL */
+		if ($showSQL) echo $sql;
 		
-		return $this->_pdo->exec("DELETE FROM $table WHERE $where");
+		return $this->exec($sql);
 	}
-	
-	/**
-	 * Just using the defaults
-	 */
-	public function beginTransaction()
-	{
-		return $this->_pdo->beginTransaction();
-	}
-	
-	public function rollBack()
-	{
-		return $this->_pdo->rollBack();
-	}
-	
-	public function commit()
-	{
-		return $this->_pdo->commit();
-	}
-	
-	public function inTransaction()
-	{
-		return $this->_pdo->inTransaction();
-	}
-	
-	public function errorCode()
-	{
-		return $this->errorCode();
-	}
-	
-	public function setAttribute($attr, $val)
-	{
-		return $this->_pdo->setAttribute($attr, $val);
-	}
-	
+		
 	/**
 	* id - Gets the last inserted ID
 	 * 
@@ -200,7 +180,7 @@ class Database
 	*/
 	public function id()
 	{
-		return $this->_pdo->lastInsertId();
+		return $this->lastInsertId();
 	}
 
 	/**
@@ -231,11 +211,11 @@ class Database
 	private function _prepareUpdateString($data) 
 	{
 		ksort($data);
+
 		/**
 		* @ Incoming $data looks like:
 		* $data = array('field' => 'value', 'field2'=> 'value2');
 		*/
-
 		$fieldDetails = NULL;
 		foreach($data as $key => $value)
 		{
@@ -250,7 +230,7 @@ class Database
 	*/
 	private function _handleError()
 	{
-		if ($this->_pdo->errorCode() != '00000')
+		if ($this->errorCode() != '00000')
 		throw new \Exception("Error: " . implode(',', $this->errorInfo()));
 	}
 	

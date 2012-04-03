@@ -10,12 +10,8 @@
 require_once 'jream/Autoload.php';
 
 new jream\Autoload('jream/');
-new jream\Form();
-jream\Hash::create('sha1', 'hey');
-new jream\Output();
-new jream\Registry();
 
-$config = array(
+$db = array(
 	'type' => 'mysql'
 	,'host' => 'localhost'
 	,'name' => 'jream_test'
@@ -23,5 +19,7 @@ $config = array(
 	,'pass' => ''
 );
 
-$db = new jream\Database($config);
-new jream\Crud($db);
+
+$db = new jream\Database($db);
+$crud = new jream\Crud($db);
+$crud->load('user');
