@@ -52,6 +52,7 @@ class Form
 		$this->_mimicPost = $mimicPost;
 		$this->_format = new Form\Format();
 		$this->_validate = new Form\Validate();
+		$this->_upload = new Form\Upload();
 	}
 	
 	/**
@@ -76,10 +77,11 @@ class Form
 		}
 		else
 		{
-			$input = isset($_POST[$name]) ? trim($_POST[$name]) : null;
+			$input = isset($_POST[$name]) ? $_POST[$name] : null;
 		}
 		
-		$input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
+		// Below: Causes problem when trying to post HTML
+		// $input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
 
 		/**
 		 * If this is not required, we skip it when the value is null
@@ -105,7 +107,6 @@ class Form
 
 		return $this;
 	}
-	
 	
 	/**
 	 * set - Set an internal record manually
@@ -169,6 +170,12 @@ class Form
 	 */
 	public function submit()
 	{
+		// Preserve form data before we kill it
+		if (isset($_SESSION['form_temp'])) {
+			unset($_SESSION['form_temp']);
+			$_SESSION['form_temp'] = $this->get();
+		}
+
 		if (count($this->_errorData) == 0)
 		{
 			return false;
