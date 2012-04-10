@@ -35,3 +35,10 @@ print_r($result);
 $db->setFetchMode(\PDO::FETCH_CLASS);
 $result = $db->select('SELECT * FROM user', array());
 print_r($result);
+
+$result = $db->select('SELECT * FROM user', array(), \PDO::FETCH_NUM);
+print_r($result);
+
+
+$cols = $db->showColumns('user');
+print_r($cols);

@@ -67,12 +67,12 @@ class Database extends \PDO
 	 * 
 	 * @param array $bindParams Fields The fields to select to replace the :colin marks,
 	 *	eg: array('email' => 'email', 'password' => 'password', 'userid' => 200);
-	 * 
-	 * @param integer $cacheTime Time to cache (NOT READY YET)
+	 *
+	 * @param constant $overrideFetchMode Pass in a PDO::FETCH_MODE to override the default or the setFetchMode setting
 	 *
 	 * @return array
 	 */
-	public function select($query, $bindParams = array(), $cacheTime = false)
+	public function select($query, $bindParams = array(), $overrideFetchMode = null)
 	{
 		/** Run Query and Bind the Values */
 		$sth = $this->prepare($query);
@@ -87,6 +87,9 @@ class Database extends \PDO
 		$this->_handleError();
 		
 		/** Automatically return all the goods */
+		if ($overrideFetchMode != null)
+		return $sth->fetchAll($overrideFetchMode);
+		else
 		return $sth->fetchAll($this->_fetchMode);
 	}
 
@@ -129,6 +132,8 @@ class Database extends \PDO
 	 * @param array $data An associative array of fields to change: field => value
 	 * @param string $where A condition on where to apply this update
 	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
+	 *
+	 * @return boolean Successful or not
 	 */
 	public function update($table, $data, $where, $showSQL = false)
 	{
@@ -160,7 +165,7 @@ class Database extends \PDO
 	* @param string $where A condition on where to apply this call
 	* @param boolean $showSQL (Default = false) Show the SQL Code being processed?
 	* 
-	* @return boolean
+	* @return integer Total affected rows
 	*/
 	public function delete($table, $where, $showSQL = false)
 	{
@@ -176,11 +181,33 @@ class Database extends \PDO
 	/**
 	* id - Gets the last inserted ID
 	 * 
-	* @return integer
-	*/
+	 * @return integer
+	 */
 	public function id()
 	{
 		return $this->lastInsertId();
+	}
+	
+	/**
+	 * showColumns - Display the columns for a table (MySQL)
+	 *
+	 * @param string $table Name of a MySQL table
+	 */
+	public function showColumns($table)
+	{
+		$result = $this->select("SHOW COLUMNS FROM `$table`", array(), \PDO::FETCH_ASSOC);
+		
+		$output = array();
+		foreach ($result as $key => $value)
+		{
+		
+			if ($value['Key'] == 'PRI')
+			$output['primary'] = $value['Field'];
+			
+			$output['column'][$value['Field']] = $value['Type'];
+		}
+		
+		return $output;
 	}
 
 	/**
