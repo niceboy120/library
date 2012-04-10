@@ -56,13 +56,13 @@ class Form
 	}
 	
 	/**
-	 * post - Retrieves POST data and saves it to the object 
+	 * post - Retrieves $_POST data and saves it to the object 
 	 *
 	 * @param string $name The name of the field to post
 	 * @param string $required (Default = false) When set to true && the value is NULL: Unset the value internally and do validate.
 	 */
 	public function post($name, $required = false)
-	{	
+	{
 		/** 
 		 * Sanitize the post data (Only allow ASCII up to 127 for now) 
 		 */
@@ -73,15 +73,17 @@ class Form
 			
 			/** Note: Using jream Exception (Within jream namespace) */
 			else
-			throw new Exception('Passing a mimic value that is not setup in your Form Request'); 
+			throw new Exception('Passing a mimic value that is does not match in your Form posts'); 
 		}
 		else
 		{
 			$input = isset($_POST[$name]) ? $_POST[$name] : null;
 		}
 		
-		// Below: Causes problem when trying to post HTML
-		// $input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
+		/** 
+		 * 	The Sanitize below causes problem when trying to post HTML, so comment it out :)
+		 *	$input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
+		 */
 
 		/**
 		 * If this is not required, we skip it when the value is null
@@ -106,6 +108,14 @@ class Form
 		$this->_currentRecord['value'] = &$this->_formData[$name];
 
 		return $this;
+	}
+	
+	/**
+	* request - Handles the $_REQUEST data
+	*/
+	public function request($name, $required = false)
+	{
+		throw new \Exception('This feature is not built yet.');
 	}
 	
 	/**
@@ -165,14 +175,20 @@ class Form
 	
 	/**
 	 * submit - Processes the entire form and gather errors if any exist
-	 * 
+	 *
+	 * @param boolean $preserveTemp Keep the previous post data inside a Session 
+	 *
 	 * @return mixed False for no errors, True (With data) for errors.
 	 */
-	public function submit()
+	public function submit($preserveTemp = false)
 	{
-		// Preserve form data before we kill it
-		if (isset($_SESSION['form_temp'])) {
+		/** Preserve form data before we kill it */
+		if ($preserveTemp && isset($_SESSION['form_temp'])) 
+		{
+			/** Remove the Previous set */
 			unset($_SESSION['form_temp']);
+			
+			/** Update the new set */
 			$_SESSION['form_temp'] = $this->get();
 		}
 
@@ -225,9 +241,7 @@ class Form
 	public function remove($key)
 	{
 		if (isset($this->_formData[$key]))
-		{
-			unset($this->_formData[$key]);
-		}
+		unset($this->_formData[$key]);
 		
 		return $this;
 	}

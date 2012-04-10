@@ -57,21 +57,17 @@ class Exception extends \Exception
 	/**
 	 * getArray - Grabs an Exception that threw an array of messages 
 	 *
-	 * return array
+	 * @return array
 	 */
 	public function getArray()
 	{
 		if (!empty($this->_array))
-		{
-			return $this->_array;
-		}
+		return $this->_array;
+
 		elseif(strlen($this->_message) > 0)
-		{
-			return $this->_message;
-		}
+		return $this->_message;
+
 		else
-		{
-			return array('unknown');
-		}
+		return array('unknown');
 	}
 }

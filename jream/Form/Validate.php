@@ -62,6 +62,20 @@ class Validate
 	}
 	
 	/**
+	 * exact - Require an exact length
+	 * 
+	 * @param string $value
+	 * @param integer $param
+	 * 
+	 * @return string For an error
+	 */
+	public function exactlength($value, $param)
+	{
+		if (strlen($value) != $param)
+		return "must be exactly $param in length";
+	}
+	
+	/**
 	 * match - Make sure a value matches something
 	 * 
 	 * @param string $value
@@ -115,12 +129,26 @@ class Validate
 		return 'must be numeric.';
 	}
 	
+	/**
+	 * float - Require float value
+	 *
+	 * @param float $value
+	 *
+	 * @return string For an error
+	 */
 	public function float($value)
 	{
 		if (!is_float($value))
 		return 'must be a float.';
 	}
 	
+	/**
+	 * boolean - Require boolean value
+	 *
+	 * @param float $value
+	 *
+	 * @return string For an error
+	 */
 	public function boolean($value)
 	{
 		if (!is_bool($value))
@@ -138,6 +166,19 @@ class Validate
 	{
 		if (!ctype_alpha($value))
 		return 'must be alphabetical only.';
+	}
+	
+	/**
+	 * alphanum - Require only alphanumeric characters
+	 * 
+	 * @param string $value
+	 * 
+	 * @return string For an error
+	 */
+	public function alphanum($value)
+	{
+		if (!ctype_alnum($value))
+		return 'must be alphanumeric only.';
 	}
 	
 	/**
