@@ -13,15 +13,20 @@ class Form
 {
 
 	/** 
-	 * @var object $_format The formatting object
+	 * @var object $_format The formatting object. Only instantiated if the method is called.
 	 */
-	private $_format;
+	private $_format = false;
 	
 	/** 
-	 * @var object $_validate The validation object
+	 * @var object $_validate The validation object. Only instantiated if the method is called.
 	 */
-	private $_validate;
+	private $_validate = false;
 
+	/** 
+	 * @var object $_upload The upload object. Only instantiated if the method is called.
+	 */
+	private $_upload = false;
+	
 	/** 
 	 * @var array $_formData Holds the POSTED data inside the object for post-processing 
 	 */
@@ -50,9 +55,6 @@ class Form
 	public function __construct($mimicPost = null)
 	{		
 		$this->_mimicPost = $mimicPost;
-		$this->_format = new Form\Format();
-		$this->_validate = new Form\Validate();
-		$this->_upload = new Form\Upload();
 	}
 	
 	/**
@@ -140,6 +142,10 @@ class Form
 	*/
 	public function format($type)
 	{
+		/** Instantiate the format class only if it's used */
+		if ($this->_format == false)
+		$this->_format new Form\Format();
+		
 		$key = $this->_currentRecord['key'];
 		$this->_formData[$key] = $this->_format->call($type, $this->_currentRecord['value']);
 		return $this;
@@ -153,14 +159,16 @@ class Form
 	 */
 	public function validate($action, $param = array())
 	{
+		/** Instantiate the validate class only if it's used */
+		if ($this->_validate == false)
+		$this->_format new Form\Validate();
+		
 		/**
 		 * From the "post() method" if this is null then then this is not required.
 		 */
 		if ($this->_currentRecord == null) 
-		{
-			return $this;
-		}
-		
+		return $this;
+				
 		$key = $this->_currentRecord['key'];
 		$value = $this->_currentRecord['value'];
 		
@@ -172,6 +180,17 @@ class Form
 		return $this;
 	}
 	
+	/**
+	 * upload - Handles the $_FILES for uploading a multi-part/form field
+	 *
+	 * @note Not Implemented
+	 */
+	public function upload()
+	{
+		/** Instantiate the upload class only if it's used */
+		if ($this->_upload == false)
+		$this->_format new Form\Upload();
+	}
 	
 	/**
 	 * submit - Processes the entire form and gather errors if any exist
