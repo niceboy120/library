@@ -144,7 +144,7 @@ class Form
 	{
 		/** Instantiate the format class only if it's used */
 		if ($this->_format == false)
-		$this->_format new Form\Format();
+		$this->_format = new Form\Format();
 		
 		$key = $this->_currentRecord['key'];
 		$this->_formData[$key] = $this->_format->call($type, $this->_currentRecord['value']);
@@ -161,7 +161,7 @@ class Form
 	{
 		/** Instantiate the validate class only if it's used */
 		if ($this->_validate == false)
-		$this->_format new Form\Validate();
+		$this->_format = new Form\Validate();
 		
 		/**
 		 * From the "post() method" if this is null then then this is not required.
@@ -189,7 +189,7 @@ class Form
 	{
 		/** Instantiate the upload class only if it's used */
 		if ($this->_upload == false)
-		$this->_format new Form\Upload();
+		$this->_format = new Form\Upload();
 	}
 	
 	/**

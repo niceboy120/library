@@ -57,7 +57,8 @@ class Autoload
 		return;
 		
 		/** Get the autoload classname without the namespace */
-		$classname = end(explode('\\', __CLASS__));
+		$classname = explode('\\', __CLASS__);
+		$classname = end($classname);
 
 		foreach(glob($this->_dir . '*') as $file)  
 		{
