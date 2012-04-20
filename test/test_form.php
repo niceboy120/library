@@ -8,9 +8,9 @@
  * @link		http://jream.com
  */
 
-require_once 'jream/Autoload.php';
+require_once '../jream/Autoload.php';
 
-new jream\Autoload('jream/');
+new jream\Autoload('../jream/');
 
 /** 
 * Drop a pre so the output is readable
@@ -38,6 +38,22 @@ try {
 	echo $e->getMessage();
 }
 
+try {
+	$form = new jream\Form($mimic);
+	$form	->post('name')
+			->validate('matchany', array('JeSSe', 'Joey', 'jenny'), false) // case-insensitive
+			//->validate('matchany', array('JeSSe', 'Joey', 'jenny')) // case-sensitive
+	
+			->post('age')
+			->validate('digit');
+
+	$form->submit();
+	print_r($form->get());
+} catch (Exception $e) {
+	echo $e->getMessage();
+}
+
+echo '<hr />';
 
 /**
 * Negative Cases

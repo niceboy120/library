@@ -96,12 +96,23 @@ class Validate
 	 * 
 	 * @param string $value
 	 * @param array $param
+	 * @param boolean $caseSensitive Default: true
 	 * 
 	 * @return string For an error
 	 */
-	public function matchAny($value, $param)
+	public function matchany($value, $param = array(), $caseSensitive = true)
 	{
-		//array req..  if in array..
+		if ($caseSensitive == false)
+		{
+			$value = strtolower($value);
+			$param = array_map('strtolower', $param);
+		}
+
+		if (!is_array($param))
+		throw new Exception(__CLASS__ . ': matchAny $param must be any array');
+		
+		if (!in_array($value, $param))
+		return "is not valid";
 	}
 	
 	/**

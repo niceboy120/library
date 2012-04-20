@@ -156,8 +156,9 @@ class Form
 	 * 
 	 * @param string $action
 	 * @param array $param If validating length, do .. ->validate('length', array(1, 4));
+	 * @param mixed $option If validating matchany lowercase, do .. ->validate('matchany', array('Jesse', 'Joe'), false);
 	 */
-	public function validate($action, $param = array())
+	public function validate($action, $param = array(), $option = null)
 	{
 		/** Instantiate the validate class only if it's used */
 		if ($this->_validate == false)
@@ -172,7 +173,15 @@ class Form
 		$key = $this->_currentRecord['key'];
 		$value = $this->_currentRecord['value'];
 		
-		$validateStatus = $this->_validate->{$action}($value, $param);
+		/** Make sure the option absolutely is null to skip an option */
+		if ($option === null)
+		{	
+			$validateStatus = $this->_validate->{$action}($value, $param);
+		}
+		else
+		{
+			$validateStatus = $this->_validate->{$action}($value, $param, $option);
+		}
 		
 		if ($validateStatus == true)
 		$this->_errorData[$key] = $validateStatus;
