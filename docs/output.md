@@ -18,7 +18,8 @@ Return a JSON Success package
 	jream\Output::success(array('Optional' => 'Data'));
 	
 Success Package Output
-	{"success":1,"errorMessage":null,"data":"Optional Data"}
+
+    {"success":1,"errorMessage":null,"data":"Optional Data"}
 
 Return the same Package with Error
 
@@ -27,6 +28,7 @@ Return the same Package with Error
 	jream\Output::error(array('Optional' => 'Data'));
 	
 Error Package Output
+
     {"success":0,"errorMessage":"Optional Data","data":null}
 	
 	
