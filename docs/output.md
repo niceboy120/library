@@ -27,7 +27,7 @@ Return the same Package with Error
 	jream\Output::error(array('Optional' => 'Data'));
 	
 Error Package Output
-	{"success":0,"errorMessage":"Optional Data","data":null}
+    {"success":0,"errorMessage":"Optional Data","data":null}
 	
 	
 ***
