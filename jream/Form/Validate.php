@@ -76,6 +76,41 @@ class Validate
 	}
 	
 	/**
+	 * greaterthan - The value must be greater than the param
+	 *
+	 * @param string $value
+	 * @param mixed $param
+	 * 
+	 * @return string For an error
+	 */
+	public function greaterthan($value, $param)
+	{
+		if (!is_int($param))
+		throw new Exception(__CLASS__ .": must supply an integer: $method");
+		
+		if ($value <= $param)
+		return "must be greater than $param";
+	}
+	
+	/**
+	 * lessthan - The value must be less than the param
+	 *
+	 * @param string $value
+	 * @param mixed $param
+	 * 
+	 * @return string For an error
+	 */
+	public function lessthan($value, $param)
+	{
+		if (!is_int($param))
+		throw new Exception(__CLASS__ .": must supply an integer: $method");
+		echo $value;
+		echo $param;
+		if ($value >= $param)
+		return "must be less than $param";
+	}
+	
+	/**
 	 * match - Make sure a value matches something
 	 * 
 	 * @param string $value
