@@ -37,8 +37,14 @@ class Controller
 	 */
 	public function loadModel($model)
 	{
-		require $model . 'php';
-		$this->model = new $model;
+	
+		$actualModel = $this->_pathModel . $model . '.php';
+		
+		if (file_exists($actualModel))
+		{
+			require $actualModel;
+			$this->model = new $model;
+		}
 	}
 
 }

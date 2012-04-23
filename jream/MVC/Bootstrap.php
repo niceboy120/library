@@ -34,12 +34,17 @@ class Bootstrap
 	/**
 	 * @var string $_pathModel Where the models are located
 	 */
-	private $_pathModel;
+	private $_pathModel = 'model';
+	
+	/**
+	 * @var string $_pathView Where the views are located
+	 */
+	private $_pathView = 'view';
 	
 	/**
 	 * @var string $_pathController Where the controllers are located
 	 */
-	private $_pathController;
+	private $_pathController = 'controller';
 	
 	/**
 	 * @var object _activeController	The currently loaded Controller
@@ -52,9 +57,9 @@ class Bootstrap
 	private $_activeView;
 
 	/** 
-	 * Initializes Controller/Methods 
+	 * init - Initializes the bootstrap handler once ready
 	 */
-	public function __construct() 
+	public function init() 
 	{
 				
 		if (isset($_GET['url']))
@@ -82,23 +87,33 @@ class Bootstrap
 	}
 	
 	/**
-	 * setPathController
+	 * setPathController - Default is 'controller'
 	 *
 	 * @param string $path Location for the controllers
 	 */
 	public function setPathController($path)
 	{
-		$this->_pathController = $path;
+		$this->_pathController = trim($path, '/') . '/';
 	}
 	
 	/**
-	 * setPathModel
+	 * setPathModel - Default is 'model'
 	 *
 	 * @param string $path Location for the models
 	 */
 	public function setPathModel($path)
 	{
-		$this->_pathModel = $path;
+		$this->_pathModel = trim($path, '/') . '/';
+	}
+	
+	/**
+	 * setPathView - Default is 'view'
+	 *
+	 * @param string $path Location for the models
+	 */
+	public function setPathView($path)
+	{
+		$this->_pathView = trim($path, '/') . '/';
 	}
 	
 	/**
@@ -108,7 +123,7 @@ class Bootstrap
 	 */
 	public function setControllerDefault($controller)
 	{
-		$this->_controllerDefault = $controller;
+		$this->_controllerDefault = strtolower($controller);
 	}
 	
 	/** 
@@ -119,7 +134,7 @@ class Bootstrap
 		/** Default to the index controller if one is not set in the URL */
 		if (!isset($this->_urlController))
 		$this->_urlController = $this->_controllerDefault;
-
+		
 		/** Make sure the actual controller exists */
 		if (file_exists($this->_pathController . $this->_urlController . '.php')) 
 		{
@@ -133,22 +148,23 @@ class Bootstrap
 			/** 
 			 * Autoload the Model if there is one 
 			*/
-			$this->controller->setPathModel();
-			$this->controller->loadModel($this->_urlController);
+			$this->controller->setPathModel($this->_pathModel);
+			$this->controller->loadModel($this->_urlController . '_Model');
 
 			/** Check if a method is in the URL */
 			if (isset($this->_urlMethod)) 
 			{
 				/** First check if a Value is passed, incase it goes into a method */
 				if (!empty($this->_urlValue))
-				$this->controller->{$this->_urlMethod}($this->_urlValue);
+				call_user_func_array(array($this->controller, $this->_urlMethod), $this->_urlValue);
+				//$this->controller->{$this->_urlMethod}($this->_urlValue);
 				
 				/** Otherwise only load the method with no arguments */
 				else
 				$this->controller->{$this->_urlMethod}();
 			}
 			else {
-				/** Revert to the default controller */
+				/** Revert to the default controller's main function */
 				$this->controller->index();
 			}
 		}
