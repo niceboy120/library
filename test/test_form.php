@@ -59,9 +59,12 @@ echo '<hr />';
 * Negative Cases
 */
 try {
-	$form = new jream\Form(array('name' => 'Jesse'));
+	$form = new jream\Form(array('name' => 'Jesse', 'age' => 25));
 	$form	->post('name')
-			->validate('minlength', 5);
+			->validate('minlength', 5)
+			
+			->post('age')
+			->validate('greaterthan', 24);
 
 	$form->submit();
 } catch (Exception $e) {
