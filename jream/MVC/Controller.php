@@ -10,6 +10,12 @@
 namespace jream\MVC;
 class Controller
 {
+
+	/**
+	* @var boolean $_isViewInstantiated
+	*/
+	private $_isViewInstantiated = false;
+
 	/**
 	 * @var string $_pathModel Path to the models
 	 */
@@ -28,6 +34,23 @@ class Controller
 	public function setPathModel($path)
 	{
 		$this->_pathModel = $path;
+	}
+	
+	/**
+	 * view - Instanites or serves the view object
+	 *
+	 * @return object View 
+	 */
+	public function view()
+	{
+		if ($_isViewInstantiated == false)
+		{
+			$this->view = new View();
+		}
+		else
+		{
+			return $this->view;
+		}
 	}
 	
 	/**

@@ -11,11 +11,10 @@ namespace jream\MVC;
 class View
 {
 
+	/**
+	 * @var array $_viewQueue
+	 */
 	private $_viewQueue = array();
-
-	public function __construct() 
-	{
-	}
 		
 	/**
 	 * render - Render a template
@@ -28,7 +27,9 @@ class View
 		require "$name.php";
 	}
 	
-	
+	/**
+	 * __destruct - Required the files when view is destroyed
+	 */
 	public function __destruct()
 	{
 		foreach($viewQueue as $vc)
