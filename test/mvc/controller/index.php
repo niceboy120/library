@@ -12,6 +12,9 @@ class Index extends jream\MVC\Controller
 	public function index()
 	{
 		echo __FUNCTION__ . ' Called' . "\n";
+		$this->view->render('header');
+		$this->view->render('index');
+		$this->view->render('footer');
 	}
 	
 	public function argtest($arg1, $arg2)

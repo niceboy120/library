@@ -15,7 +15,17 @@ class View
 	 * @var array $_viewQueue
 	 */
 	private $_viewQueue = array();
-		
+
+	/**
+	 * @var string $_path
+	 */
+	private $_path;
+	
+	/**
+	 * __construct
+	 */
+	public function __construct() {}
+	
 	/**
 	 * render - Render a template
 	 *
@@ -23,8 +33,17 @@ class View
 	 */
 	public function render($name)
 	{
-		$this->viewQueue[] = $name;
-		require "$name.php";
+		$this->_viewQueue[] = $name;
+	}
+	
+	/**
+	 * setPath - Called from the Bootstrap
+	 *
+	 * @param string $path Location for the models
+	 */
+	public function setPath($path)
+	{
+		$this->_path = $path;
 	}
 	
 	/**
@@ -32,9 +51,11 @@ class View
 	 */
 	public function __destruct()
 	{
-		foreach($viewQueue as $vc)
+		foreach($this->_viewQueue as $vc)
 		{
-			require $vc . '.php';
+			echo $this->_path;
+			echo $vc;
+			require $this->_path . $vc . '.php';
 		}
 	}
 	

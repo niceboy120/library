@@ -47,14 +47,9 @@ class Bootstrap
 	private $_pathController = 'controller';
 	
 	/**
-	 * @var object _activeController	The currently loaded Controller
+	 * @var object _basePath The basepath to include files from
 	 */ 
-	private $_activeController;
-	
-	/**
-	 * @var object _activeView		The currently loaded View
-	 */
-	private $_activeView;
+	private $_basePath;
 
 	/** 
 	 * init - Initializes the bootstrap handler once ready
@@ -83,7 +78,10 @@ class Bootstrap
 			unset($url);
 		}
 
+		/** The order of these are important */
+		$this->_initView();
 		$this->_initController();
+		$this->_initModel();
 	}
 	
 	/**
@@ -144,12 +142,6 @@ class Bootstrap
 			
 			$controller = $this->_urlController;
 			$this->controller = new $controller();
-			
-			/** 
-			 * Autoload the Model if there is one 
-			*/
-			$this->controller->setPathModel($this->_pathModel);
-			$this->controller->loadModel($this->_urlController . '_Model');
 
 			/** Check if a method is in the URL */
 			if (isset($this->_urlMethod)) 
@@ -157,7 +149,6 @@ class Bootstrap
 				/** First check if a Value is passed, incase it goes into a method */
 				if (!empty($this->_urlValue))
 				call_user_func_array(array($this->controller, $this->_urlMethod), $this->_urlValue);
-				//$this->controller->{$this->_urlMethod}($this->_urlValue);
 				
 				/** Otherwise only load the method with no arguments */
 				else
@@ -173,5 +164,29 @@ class Bootstrap
 			die(__CLASS__ . ': error (non-existant controller)');
 		}
 	}
-
+	
+	/** 
+	 * _initModel - Autoload the Model if there is one 
+	 */
+	private function _initModel()
+	{
+		$actualModel = $this->_pathModel . $this->_urlController . '_Model.php';
+		
+		if (file_exists($actualModel))
+		{
+			require $actualModel;
+			$model = (string) $this->_urlController . '_Model';
+			$model = (object) new $model();
+			
+			$this->controller->model = $model;
+		}
+	}
+	
+	private function _initView()
+	{
+		$view = new View();
+		$view->setPath($this->_pathView);
+		\jream\Registry::set('view', $view);
+	}
+	
 }
