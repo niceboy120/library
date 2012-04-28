@@ -1,5 +1,6 @@
-JREAM Library - Utilities for PHP
-Copyright (C) 2011-12  Jesse Boyer <contact@jream.com>
+# JREAM Library - Utilities for PHP
+***
+Copyright (C) 2011-12  Jesse Boyer <http://jream.com>
  
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
