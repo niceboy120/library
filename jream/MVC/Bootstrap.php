@@ -56,6 +56,8 @@ class Bootstrap
 	 */
 	public function init() 
 	{
+		if (!isset($this->_pathRoot)) 
+		die('You must run setPathRoot($path)');
 				
 		if (isset($_GET['url']))
 		{	
@@ -85,13 +87,23 @@ class Bootstrap
 	}
 	
 	/**
+	 * setPathBase - Required
+	 * 
+	 * @param type $path Location of the root path
+	 */
+	public function setPathRoot($path)
+	{
+		$this->_pathRoot = trim($path, '/') . '/';
+	}
+	
+	/**
 	 * setPathController - Default is 'controller'
 	 *
 	 * @param string $path Location for the controllers
 	 */
 	public function setPathController($path)
 	{
-		$this->_pathController = trim($path, '/') . '/';
+		$this->_pathController = $this->_pathRoot . trim($path, '/') . '/';
 	}
 	
 	/**
@@ -101,7 +113,7 @@ class Bootstrap
 	 */
 	public function setPathModel($path)
 	{
-		$this->_pathModel = trim($path, '/') . '/';
+		$this->_pathModel = $this->_pathRoot . trim($path, '/') . '/';
 	}
 	
 	/**
@@ -111,7 +123,7 @@ class Bootstrap
 	 */
 	public function setPathView($path)
 	{
-		$this->_pathView = trim($path, '/') . '/';
+		$this->_pathView = $this->_pathRoot . trim($path, '/') . '/';
 	}
 	
 	/**

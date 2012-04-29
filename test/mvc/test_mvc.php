@@ -11,11 +11,8 @@ require_once '../../jream/Autoload.php';
 
 new jream\Autoload('../../jream/');
 
-echo '<pre>';
-
-echo "Call the url: test_mvc.php?url=index/argtest/color/red"  . "\n";
-echo "Call the url: test_mvc.php?url=index/modeltest"  . "\n";
 $bootstrap = new jream\MVC\Bootstrap();
+$bootstrap->setPathRoot(getcwd());
 $bootstrap->setPathController('controller/');
 $bootstrap->setPathModel('model/');
 $bootstrap->setPathView('view/');

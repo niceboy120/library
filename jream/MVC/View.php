@@ -53,8 +53,6 @@ class View
 	{
 		foreach($this->_viewQueue as $vc)
 		{
-			echo $this->_path;
-			echo $vc;
 			require $this->_path . $vc . '.php';
 		}
 	}
