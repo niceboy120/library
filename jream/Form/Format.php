@@ -22,13 +22,37 @@ class Format
 	 * 
 	 * @throws Exception Upon invalid function
 	 */
-	public function call($call, $param)
+	public function __call($call, $param)
 	{
-		if (!function_exists())
+		if (!function_exists($call))
 		throw new Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
 		
 		else
-		return call_user_func($call, $param);
+		return call_user_func($call, $param[0]);
 	}
+
+	/**
+	 * upper - Shortcut
+	 *
+	 * @param string $str String to format
+	 *
+	 * @return string
+	 */
+	function upper($str)
+	{
+		return strtoupper($str);
+	}
+
+	/**
+	 * lower - Shortcut
+	 *
+	 * @param string $str String to format
+	 *
+	 * @return string
+	 */	
+	function lower($str)
+	{
+		return strtolower($str);
+	}	
 	
 }

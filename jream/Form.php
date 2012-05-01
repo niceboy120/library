@@ -147,7 +147,7 @@ class Form
 		$this->_format = new Form\Format();
 		
 		$key = $this->_currentRecord['key'];
-		$this->_formData[$key] = $this->_format->call($type, $this->_currentRecord['value']);
+		$this->_formData[$key] = $this->_format->{$type}($this->_currentRecord['value']);
 		return $this;
 	}
 	
