@@ -22,6 +22,11 @@ namespace jream;
 class Database extends \PDO
 {
 
+	/**
+	 * @var boolean $activeTransaction Whether a transaction is going on
+	 */
+	public $activeTransaction;
+	
 	/** 
 	 * @var constant $_fetchMode The select statement fetch mode 
 	 */
@@ -186,6 +191,33 @@ class Database extends \PDO
 	public function id()
 	{
 		return $this->lastInsertId();
+	}
+	
+	/**
+	 * beginTransaction - Overloading default method 
+	 */
+	public function beginTransaction()
+	{
+		parent::beginTransaction();
+		$this->activeTransaction = true;
+	}
+	
+	/**
+	 * commit - Overloading default method 
+	 */
+	public function commit()
+	{
+		parent::commit();
+		$this->activeTransaction = false;
+	}
+	
+	/**
+	 * rollback - Overloading default method 
+	 */
+	public function rollback()
+	{
+		parent::rollback();
+		$this->activeTransaction = false;
 	}
 	
 	/**
