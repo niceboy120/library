@@ -28,5 +28,16 @@ class Controller
 	{
 		$this->view = \jream\Registry::get('view');
 	}
+
+	/**
+	* location - Shortcut for a page redirect
+	*
+	* @param string $url 
+	*/
+	public function location($url)
+	{
+		header("location: $url");
+		exit(0);
+	}
 	
 }
