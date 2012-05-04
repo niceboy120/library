@@ -11,9 +11,15 @@ namespace jream\MVC;
 class Model
 {
 
+	/** @var object $db The jream Database object */
+	public $db;
+
+	/**
+	* __construct - Include database object if defined
+	*/
 	public function __construct()
 	{
-		//$this->db = new \jream\Database();
+		$this->db = \jream\Registry::get('db');
 	}
 	
 }
