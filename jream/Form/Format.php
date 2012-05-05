@@ -11,7 +11,6 @@
 namespace jream\Form;
 class Format
 {
-
 	/**
 	 * call - Run any PHP function to format
 	 * 
@@ -53,6 +52,108 @@ class Format
 	function lower($str)
 	{
 		return strtolower($str);
-	}	
+	}
 	
+	/**
+	 * iftrue - If the value is set, change the value to the parameter
+	 *
+	 * @param string $str String to change
+	 * @param string $array Item to change the value to
+	 *
+	 * @return string
+	 */
+	function iftrue($str, $param)
+	{
+		if (!empty($str))
+		return $param[0];
+	}
+	
+	/**
+	 * iffalse - If the value is not set, change the value to the parameter
+	 *
+	 * @param string $str String to change
+	 * @param string $array Item to change the value to
+	 *
+	 * @return string
+	 */
+	function iffalse($str, $param)
+	{
+		if (empty($str))
+		return $param[0];
+	}
+	
+	/**
+	 * ifgt - If greater than, replace with ..
+	 * 
+	 * @param mixed $str Integer will compare value, String will compare length
+	 * @param array $param When greater than, replace value of key 0 with 1
+	 * 
+	 * @return mixed
+	 */
+	function ifgt($str, $param)
+	{
+		if (count($param) != 2)
+		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
+		
+		if (is_int($str))
+		{
+			if ($str > $param[0])
+			return $param[1];
+		}
+		if (is_string($str))
+		{
+			if (strlen($str) > $param[0])
+			return $param[1];
+		}
+	}
+	
+	/**
+	 * iflt - If less than, replace with ..
+	 * 
+	 * @param mixed $str Integer will compare value, String will compare length
+	 * @param array $param When less than, replace value of key 0 with 1
+	 * 
+	 * @return mixed
+	 */
+	function iflt($str, $param)
+	{
+		if (count($param) != 2)
+		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace');
+
+		if (is_int($str))
+		{
+			if ($str > $param[0])
+			return $param[1];
+		}
+		if (is_string($str))
+		{
+			if (strlen($str) > $param[0])
+			return $param[1];
+		}
+	}
+	
+	/**
+	 * ifeq - If equals than, replace with ..
+	 * 
+	 * @param mixed $str Integer will compare value, String will compare value
+	 * @param array $param When equal, replace value of key 0 with 1
+	 * 
+	 * @return mixed
+	 */
+	function ifeq($str, $param)
+	{
+		if (count($param) != 2)
+		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace');
+
+		if (is_int($str))
+		{
+			if ($str == $param[0])
+			return $param[1];
+		}
+		if (is_string($str))
+		{
+			if ($str == $param[0])
+			return $param[1];
+		}
+	}
 }
