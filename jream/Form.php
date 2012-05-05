@@ -21,11 +21,6 @@ class Form
 	 * @var object $_validate The validation object. Only instantiated if the method is called.
 	 */
 	private $_validate = false;
-
-	/** 
-	 * @var object $_upload The upload object. Only instantiated if the method is called.
-	 */
-	private $_upload = false;
 	
 	/** 
 	 * @var array $_formData Holds the POSTED data inside the object for post-processing 
@@ -187,18 +182,6 @@ class Form
 		$this->_errorData[$key] = $validateStatus;
 		
 		return $this;
-	}
-	
-	/**
-	 * upload - Handles the $_FILES for uploading a multi-part/form field
-	 *
-	 * @note Not Implemented
-	 */
-	public function upload()
-	{
-		/** Instantiate the upload class only if it's used */
-		if ($this->_upload == false)
-		$this->_upload = new Form\Upload();
 	}
 	
 	/**
