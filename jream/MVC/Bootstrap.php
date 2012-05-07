@@ -82,8 +82,8 @@ class Bootstrap
 
 		/** The order of these are important */
 		$this->_initView();
-		$this->_initController();
 		$this->_initModel();
+		$this->_initController();
 	}
 	
 	/**
@@ -189,8 +189,7 @@ class Bootstrap
 			require $actualModel;
 			$model = (string) $this->_urlController . '_model';
 			$model = (object) new $model();
-			
-			$this->controller->model = $model;
+			\jream\Registry::set('model', $model);
 		}
 	}
 	
