@@ -246,13 +246,17 @@ class Form
 	/**
 	 * remove - Remove an internal record
 	 * 
-	 * @param string $key The internal key :)
+	 * @param string(s) Pass as many function arguments as needed to unset
+	 *		  eg: form->remove('field', 'field2', 'field3');
 	 * @return boolean 
 	 */
-	public function remove($key)
+	public function remove($unlimited) // 
 	{
-		if (isset($this->_formData[$key]))
-		unset($this->_formData[$key]);
+		foreach (func_get_args() as $key => $value) {
+			if (isset($this->_formData[$value]))
+			unset($this->_formData[$value]);
+		}
+		
 		
 		return $this;
 	}
