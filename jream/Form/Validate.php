@@ -120,7 +120,7 @@ class Validate
 	 */
 	public function match($value, $param)
 	{
-		if ($value !== $param[0])
+		if ($value !== $param)
 		return "does not match";
 	}
 	
