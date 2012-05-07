@@ -156,7 +156,7 @@ class Bootstrap
 			$this->controller = new $controller();
 
 			/** Check if a method is in the URL */
-			if (isset($this->_urlMethod)) 
+			if (isset($this->_urlMethod))
 			{
 				/** First check if a Value is passed, incase it goes into a method */
 				if (!empty($this->_urlValue))
@@ -182,12 +182,12 @@ class Bootstrap
 	 */
 	private function _initModel()
 	{
-		$actualModel = $this->_pathModel . $this->_urlController . '_Model.php';
+		$actualModel = $this->_pathModel . $this->_urlController . '_model.php';
 		
 		if (file_exists($actualModel))
 		{
 			require $actualModel;
-			$model = (string) $this->_urlController . '_Model';
+			$model = (string) $this->_urlController . '_model';
 			$model = (object) new $model();
 			
 			$this->controller->model = $model;
