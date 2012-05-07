@@ -24,7 +24,7 @@ class Format
 	public function __call($call, $param)
 	{
 		if (!function_exists($call))
-		throw new Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
+		throw new \Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
 		
 		else
 		return call_user_func($call, $param[0]);
