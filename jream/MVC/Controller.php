@@ -27,6 +27,7 @@ class Controller
 	public function __construct() 
 	{
 		$this->view = \jream\Registry::get('view');
+		$this->model = \jream\Registry::get('model');
 	}
 
 	/**
