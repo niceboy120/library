@@ -24,7 +24,7 @@ class Format
 	public function __call($call, $param)
 	{
 		if (!function_exists($call))
-		throw new \Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
+		throw new \jream\Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
 		
 		else
 		return call_user_func($call, $param[0]);
@@ -93,7 +93,7 @@ class Format
 	function ifgt($str, $param)
 	{
 		if (count($param) != 2)
-		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
+		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
 		
 		if (is_int($str))
 		{
@@ -118,7 +118,7 @@ class Format
 	function iflt($str, $param)
 	{
 		if (count($param) != 2)
-		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace');
+		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
 
 		if (is_int($str))
 		{
@@ -143,7 +143,7 @@ class Format
 	function ifeq($str, $param)
 	{
 		if (count($param) != 2)
-		throw new \Exception(__FUNCTION__ . ': $param must have two values: find, replace');
+		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
 
 		if (is_int($str))
 		{

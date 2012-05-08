@@ -134,15 +134,22 @@ class Form
 	* format - Format the POSTED contents internally
 	* 
 	* @param string $type The name of a function such as md5, trim, etc
+	* @param mixed $param Additional parameters for formatting 
 	*/
-	public function format($type)
+	public function format($type, $param = null)
 	{
 		/** Instantiate the format class only if it's used */
 		if ($this->_format == false)
 		$this->_format = new Form\Format();
 		
 		$key = $this->_currentRecord['key'];
+		
+		if ($param == null) 
 		$this->_formData[$key] = $this->_format->{$type}($this->_currentRecord['value']);
+		
+		else
+		$this->_formData[$key] = $this->_format->{$type}($this->_currentRecord['value'], $param);	
+			
 		return $this;
 	}
 	
