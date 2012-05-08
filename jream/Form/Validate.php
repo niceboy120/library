@@ -86,7 +86,7 @@ class Validate
 	public function gt($value, $param)
 	{
 		if (!is_int($param))
-		throw new Exception(__CLASS__ .": must supply an integer: $method");
+		throw new \Exception(__CLASS__ .": must supply an integer: $method");
 		
 		if ($value <= $param)
 		return "must be greater than $param";
@@ -103,7 +103,7 @@ class Validate
 	public function lt($value, $param)
 	{
 		if (!is_int($param))
-		throw new Exception(__CLASS__ .": must supply an integer: $method");
+		throw new \Exception(__CLASS__ .": must supply an integer: $method");
 		echo $value;
 		echo $param;
 		if ($value >= $param)
@@ -144,7 +144,7 @@ class Validate
 		}
 
 		if (!is_array($param))
-		throw new Exception(__CLASS__ . ': matchAny $param must be any array');
+		throw new \Exception(__CLASS__ . ': matchAny $param must be any array');
 		
 		if (!in_array($value, $param))
 		return "is not valid";
@@ -248,8 +248,37 @@ class Validate
 	 * 
 	 * @throws Exception
 	 */
-	public function __call($method, $arg)
+	public function __call($method, $arg = null)
 	{
-		throw new Exception(__CLASS__ .": Does not have any method called: $method");
+		$args = func_get_args();
+		array_shift($args); // Remove the method name
+		/**
+		 * Aliases
+		 */
+		switch ($method) {
+			case 'len':
+				$this->length($args[0][0], $args[0][1]);
+				break;
+			case 'minlen':
+				$this->minlength($args[0][0], $args[0][1]);
+				break;
+			case 'maxlen':
+				$this->maxlength($arg[0][0], $args[0][1]);
+				break;
+			case 'match':
+				$this->eq($args[0][0], $args[0][1]);
+				break;
+			case 'matchany':
+				$this->eqany($args[0], $args[0][1]);
+				break;
+			case 'greaterthan':
+				$this->gt($args[0][0], $args[0][1]);
+				break;
+			case 'lessthan':
+				$this->lt($args[0][0], $args[0][1]);
+				break;
+			default:
+				throw new Exception(__CLASS__ .": Does not have any method called: $method");		
+		}
 	}
 }

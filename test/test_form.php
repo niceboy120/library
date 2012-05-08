@@ -28,7 +28,15 @@ $mimic = array(
 try {
 	$form = new jream\Form($mimic);
 	$form	->post('name')
-	
+/*
+			// ->validate('len', array(1,6))
+			// ->validate('minlen', 1)
+			// ->validate('maxlen', 5)
+			// ->validate('match', 'dog')*/
+// /?
+			->validate('matchany', array(1,2,3,4))
+			->validate('greaterthan', 5)
+			->validate('lessthan', 4)
 			->post('age')
 			->validate('digit');
 
