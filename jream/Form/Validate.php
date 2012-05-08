@@ -76,14 +76,14 @@ class Validate
 	}
 	
 	/**
-	 * greaterthan - The value must be greater than the param
+	 * gt - The value must be greater than the param
 	 *
 	 * @param string $value
 	 * @param mixed $param
 	 * 
 	 * @return string For an error
 	 */
-	public function greaterthan($value, $param)
+	public function gt($value, $param)
 	{
 		if (!is_int($param))
 		throw new Exception(__CLASS__ .": must supply an integer: $method");
@@ -93,14 +93,14 @@ class Validate
 	}
 	
 	/**
-	 * lessthan - The value must be less than the param
+	 * lt - The value must be less than the param
 	 *
 	 * @param string $value
 	 * @param mixed $param
 	 * 
 	 * @return string For an error
 	 */
-	public function lessthan($value, $param)
+	public function lt($value, $param)
 	{
 		if (!is_int($param))
 		throw new Exception(__CLASS__ .": must supply an integer: $method");
@@ -111,21 +111,21 @@ class Validate
 	}
 	
 	/**
-	 * match - Make sure a value matches something
+	 * eq - Make sure a value matches/equals something
 	 * 
 	 * @param string $value
 	 * @param mixed $param
 	 * 
 	 * @return string For an error
 	 */
-	public function match($value, $param)
+	public function eq($value, $param)
 	{
 		if ($value !== $param)
 		return "does not match";
 	}
 	
 	/**
-	 * matchAny - Require atleast a single match inside of an array 
+	 * eqany - Require atleast a single match inside of an array 
 	 * 
 	 * @todo: This should combine with match, and you can pass an array
 	 * 
@@ -135,7 +135,7 @@ class Validate
 	 * 
 	 * @return string For an error
 	 */
-	public function matchany($value, $param = array(), $caseSensitive = true)
+	public function eqany($value, $param = array(), $caseSensitive = true)
 	{
 		if ($caseSensitive == false)
 		{
