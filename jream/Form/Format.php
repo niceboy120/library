@@ -55,6 +55,24 @@ class Format
 	}
 	
 	/**
+	 * replace - Replaces values in a string
+	 * 
+	 * @param string $str String to change
+	 * @param string $array Item to change the value to
+	 *
+	 * @return string
+	 * 
+	 * @throws \jream\Exception 
+	 */
+	function replace($str, $param)
+	{
+		if (count($param) != 2)
+		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
+		
+		return str_replace($param[0], $param[1], $str);
+	}
+	
+	/**
 	 * iftrue - If the value is set, change the value to the parameter
 	 *
 	 * @param string $str String to change
@@ -89,6 +107,8 @@ class Format
 	 * @param array $param When greater than, replace value of key 0 with 1
 	 * 
 	 * @return mixed
+	 *
+	 * @throws \jream\Exception 
 	 */
 	function ifgt($str, $param)
 	{
@@ -114,6 +134,8 @@ class Format
 	 * @param array $param When less than, replace value of key 0 with 1
 	 * 
 	 * @return mixed
+	 *
+	 * @throws \jream\Exception 
 	 */
 	function iflt($str, $param)
 	{
@@ -139,6 +161,8 @@ class Format
 	 * @param array $param When equal, replace value of key 0 with 1
 	 * 
 	 * @return mixed
+	 *
+	 * @throws \jream\Exception 
 	 */
 	function ifeq($str, $param)
 	{
