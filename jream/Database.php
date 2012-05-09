@@ -86,7 +86,9 @@ class Database extends \PDO
 			$sth->bindValue(":$key", $value);
 		}
 	
-		$sth->execute();
+		if ($sth->execute() == false) {
+			throw new \Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+		}
 	
 		/** Throw an exception for an error */
 		$this->_handleError();
@@ -121,7 +123,9 @@ class Database extends \PDO
 			$sth->bindValue(":$key", $value);
 		}
 
-		$sth->execute();
+		if ($sth->execute() == false) {
+			throw new \Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+		}
 		
 		/** Throw an exception for an error */
 		$this->_handleError();
@@ -159,6 +163,10 @@ class Database extends \PDO
 		}
 
 		$result = $sth->execute();
+		if ($result == false) {
+			throw new \Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+		}
+		
 		$this->_handleError();
 		return $result;
 	}
