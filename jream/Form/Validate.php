@@ -43,7 +43,7 @@ class Validate
 	 */
 	public function minlength($value, $param)
 	{
-		if (strlen($value) <= $param)
+		if (strlen($value) < $param)
 		return "must be atleast $param in length";
 	}
 	
