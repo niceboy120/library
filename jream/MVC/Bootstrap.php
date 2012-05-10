@@ -27,7 +27,7 @@ class Bootstrap
 	private $_urlMethod;
 	
 	/**
-	 * @var array $_urlValue Values beyond the controller/method
+	 * @var array $this->_urlValue Values beyond the controller/method
 	 */
 	private $_urlValue = array();
 	
@@ -160,7 +160,30 @@ class Bootstrap
 			{
 				/** First check if a Value is passed, incase it goes into a method */
 				if (!empty($this->_urlValue))
-				call_user_func_array(array($this->controller, $this->_urlMethod), $this->_urlValue);
+				{
+					switch (count($this->_urlValue))
+					{
+						case 1:
+						$this->controller->{$this->_urlMethod}($this->_urlValue[0]);
+						break;
+					
+						case 2:
+						$this->controller->{$this->_urlMethod}($this->_urlValue[0], $this->_urlValue[1]);
+						break;
+							
+						case 3:
+						$this->controller->{$this->_urlMethod}($this->_urlValue[0], $this->_urlValue[1], $this->_urlValue[2]);
+						break;
+					
+						case 4:
+						$this->controller->{$this->_urlMethod}($this->_urlValue[0], $this->_urlValue[1], $this->_urlValue[2], $this->_urlValue[3]);
+						break;
+					
+						case 5:
+						$this->controller->{$this->_urlMethod}($this->_urlValue[0], $this->_urlValue[1], $this->_urlValue[2], $this->_urlValue[3], $this->_urlValue[4]);
+						break;
+					}
+				}
 				
 				/** Otherwise only load the method with no arguments */
 				else
