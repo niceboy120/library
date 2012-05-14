@@ -267,25 +267,25 @@ class Validate
 		 */
 		switch ($method) {
 			case 'len':
-				$this->length($args[0][0], $args[0][1]);
+				return $this->length($args[0][0], $args[0][1]);
 				break;
 			case 'minlen':
-				$this->minlength($args[0][0], $args[0][1]);
+				return $this->minlength($args[0][0], $args[0][1]);
 				break;
 			case 'maxlen':
-				$this->maxlength($arg[0][0], $args[0][1]);
+				return $this->maxlength($arg[0][0], $args[0][1]);
 				break;
 			case 'match':
-				$this->eq($args[0][0], $args[0][1]);
+				return $this->eq($args[0][0], $args[0][1]);
 				break;
 			case 'matchany':
-				$this->eqany($args[0], $args[0][1]);
+				return $this->eqany($args[0], $args[0][1]);
 				break;
 			case 'greaterthan':
-				$this->gt($args[0][0], $args[0][1]);
+				return $this->gt($args[0][0], $args[0][1]);
 				break;
 			case 'lessthan':
-				$this->lt($args[0][0], $args[0][1]);
+				return $this->lt($args[0][0], $args[0][1]);
 				break;
 			default:
 				throw new Exception(__CLASS__ .": Does not have any method called: $method");		
