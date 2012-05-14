@@ -247,7 +247,10 @@ class Form
 		}
 		
 		else
-		return $this->_formData;
+		/**
+		* Make sure no empty items get placed
+		*/
+		return array_filter($this->_formData, 'strlen');
 	}
 	
 	/**

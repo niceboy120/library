@@ -8,176 +8,284 @@
  * @link		http://jream.com
  * @category	Form
  */
-namespace jream\Form;
-class Format
+namespace jream;
+class Form
 {
-	/**
-	 * call - Run any PHP function to format
-	 * 
-	 * @param string $call
-	 * @param string $param
-	 * 
-	 * @return string
-	 * 
-	 * @throws Exception Upon invalid function
+
+	/** 
+	 * @var object $_format The formatting object. Only instantiated if the method is called.
 	 */
-	public function __call($call, $param)
+	private $_format = false;
+	
+	/** 
+	 * @var object $_validate The validation object. Only instantiated if the method is called.
+	 */
+	private $_validate = false;
+	
+	/** 
+	 * @var array $_formData Holds the POSTED data inside the object for post-processing 
+	 */
+	private $_formData = array();
+	
+	/** 
+	 * @var array $_errorData Holds the VALIDATION errors 
+	 */
+	private $_errorData = array();
+	
+	/** 
+	 * @var string $_currentRecord Holds the immediate record being handled (To chain validation on the spot) 
+	 */
+	private $_currentRecord = null;
+	
+	/**
+	 * @var mixed $_mimicPost Used for passing artificial $_POST requests
+	 */
+	private $_mimicPost = null;
+	
+	/**
+	 * __construct - Instanatiates the Validate object 
+	 *
+	 * @param mixed $mimicPost (Optional) Pass an associative array matching the form->post() names to mimic a POST
+	 */
+	public function __construct($mimicPost = null)
+	{		
+		$this->_mimicPost = $mimicPost;
+	}
+	
+	/**
+	 * post - Retrieves $_POST data and saves it to the object 
+	 *
+	 * @param string $name The name of the field to post
+	 * @param string $required (Default = false) When set to true && the value is NULL: Unset the value internally and do validate.
+	 */
+	public function post($name, $required = false)
 	{
-		if (!function_exists($call))
-		throw new \jream\Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
+		/** Prevent empty keynames */
+		if (strlen($name) == 0) {
+			return $this;
+		}
+		
+		/** 
+		 * Sanitize the post data (Only allow ASCII up to 127 for now) 
+		 */
+		if (is_array($this->_mimicPost) && isset($this->_mimicPost[$name]))
+		{
+			if (isset($this->_mimicPost[$name]))
+			$input = $this->_mimicPost[$name];
+			
+			/** Note: Using jream Exception (Within jream namespace) */
+			else
+			throw new Exception('Passing a mimic value that is does not match in your Form posts'); 
+		}
+		else
+		{
+			$input = isset($_POST[$name]) ? $_POST[$name] : null;
+		}
+		
+		/** 
+		 * 	The Sanitize below causes problem when trying to post HTML, so comment it out :)
+		 *	$input = filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_ENCODE_HIGH);
+		 */
+
+		/**
+		 * If this is not required, we skip it when the value is null
+		 * This is so something can post and someone can EDIT on a few fields at a time
+		 */
+		if ($required == false && $input == null)
+		{
+			/** An internal flag to prevent the validator from running */
+			$this->_currentRecord = null;
+			return $this;
+		}
+		
+		/**
+		 * Set a new record in this object 
+		 */
+		$this->_formData[$name] = $input;
+		
+		/** 
+		 * Hold on to the immediate record incase validation is called next 
+		 */
+		$this->_currentRecord['key'] = &$name;
+		$this->_currentRecord['value'] = &$this->_formData[$name];
+
+		return $this;
+	}
+	
+	/**
+	* request - Handles the $_REQUEST data
+	*/
+	public function request($name, $required = false)
+	{
+		throw new \Exception('This feature is not built yet.');
+	}
+	
+	/**
+	 * set - Set an internal record manually
+	 * 
+	 * @param string $name
+	 * @param string $value
+	 * @return boolean
+	 */
+	public function set($name, $value)
+	{
+		/** I want this to override stuff */
+		$this->_formData[$name] = $value;
+		
+		return $this;
+	}
+	
+	/**
+	* format - Format the POSTED contents internally
+	* 
+	* @param string $type The name of a function such as md5, trim, etc
+	* @param mixed $param Additional parameters for formatting 
+	*/
+	public function format($type, $param = null)
+	{
+		/** Instantiate the format class only if it's used */
+		if ($this->_format == false)
+		$this->_format = new Form\Format();
+		
+		$key = $this->_currentRecord['key'];
+		
+		if ($param == null) 
+		$this->_formData[$key] = $this->_format->{$type}($this->_currentRecord['value']);
 		
 		else
-		return call_user_func($call, $param[0]);
-	}
-
-	/**
-	 * upper - Shortcut
-	 *
-	 * @param string $str String to format
-	 *
-	 * @return string
-	 */
-	function upper($str)
-	{
-		return strtoupper($str);
-	}
-
-	/**
-	 * lower - Shortcut
-	 *
-	 * @param string $str String to format
-	 *
-	 * @return string
-	 */	
-	function lower($str)
-	{
-		return strtolower($str);
+		$this->_formData[$key] = $this->_format->{$type}($this->_currentRecord['value'], $param);	
+			
+		return $this;
 	}
 	
 	/**
-	 * replace - Replaces values in a string
+	 * validate - Validates the current POST item
 	 * 
-	 * @param string $str String to change
-	 * @param string $array Item to change the value to
-	 *
-	 * @return string
-	 * 
-	 * @throws \jream\Exception 
+	 * @param string $action
+	 * @param array $param If validating length, do .. ->validate('length', array(1, 4));
+	 * @param mixed $option If validating matchany lowercase, do .. ->validate('matchany', array('Jesse', 'Joe'), false);
 	 */
-	function replace($str, $param)
+	public function validate($action, $param = array(), $option = null)
 	{
-		if (count($param) != 2)
-		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
+		/** Instantiate the validate class only if it's used */
+		if ($this->_validate == false)
+		$this->_validate = new Form\Validate();
 		
-		return str_replace($param[0], $param[1], $str);
-	}
-	
-	/**
-	 * iftrue - If the value is set, change the value to the parameter
-	 *
-	 * @param string $str String to change
-	 * @param string $array Item to change the value to
-	 *
-	 * @return string
-	 */
-	function iftrue($str, $param)
-	{
-		if (!empty($str))
-		return $param[0];
-	}
-	
-	/**
-	 * iffalse - If the value is not set, change the value to the parameter
-	 *
-	 * @param string $str String to change
-	 * @param string $array Item to change the value to
-	 *
-	 * @return string
-	 */
-	function iffalse($str, $param)
-	{
-		if (empty($str))
-		return $param[0];
-	}
-	
-	/**
-	 * ifgt - If greater than, replace with ..
-	 * 
-	 * @param mixed $str Integer will compare value, String will compare length
-	 * @param array $param When greater than, replace value of key 0 with 1
-	 * 
-	 * @return mixed
-	 *
-	 * @throws \jream\Exception 
-	 */
-	function ifgt($str, $param)
-	{
-		if (count($param) != 2)
-		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
+		/**
+		 * From the "post() method" if this is null then then this is not required.
+		 */
+		if ($this->_currentRecord == null) 
+		return $this;
+				
+		$key = $this->_currentRecord['key'];
+		$value = $this->_currentRecord['value'];
 		
-		if (is_int($str))
-		{
-			if ($str > $param[0])
-			return $param[1];
+		/** Make sure the option absolutely is null to skip an option */
+		if ($option === null)
+		{	
+			$validateStatus = $this->_validate->{$action}($value, $param);
 		}
-		if (is_string($str))
+		else
 		{
-			if (strlen($str) > $param[0])
-			return $param[1];
+			$validateStatus = $this->_validate->{$action}($value, $param, $option);
+		}
+		
+		if ($validateStatus == true)
+		$this->_errorData[$key] = $validateStatus;
+		
+		return $this;
+	}
+	
+	/**
+	 * submit - Processes the entire form and gather errors if any exist
+	 *
+	 * @param boolean $preserveTemp Keep the previous post data inside a Session 
+	 *
+	 * @return mixed False for no errors, True (With data) for errors.
+	 */
+	public function submit($preserveTemp = false)
+	{
+		/** Preserve form data before we kill it */
+		if ($preserveTemp && isset($_SESSION['form_temp'])) 
+		{
+			/** Remove the Previous set */
+			unset($_SESSION['form_temp']);
+			
+			/** Update the new set */
+			$_SESSION['form_temp'] = $this->get();
+		}
+
+		if (count($this->_errorData) == 0)
+		{
+			return false;
+		}
+		else
+		{
+			$output = '';
+			foreach($this->_errorData as $key => $value)
+			{
+				$output .= "$key: $value\n";
+			}
+			$output = rtrim($output, "\n");
+			
+			/** Note: Using jream Exception (Within jream namespace) */
+			/** Throw our custom Form Exception for outputting a string or array */
+			throw new Exception($output, $this->_errorData);
 		}
 	}
 	
 	/**
-	 * iflt - If less than, replace with ..
+	 * get - Get a value from the POSTED records stored internally
 	 * 
-	 * @param mixed $str Integer will compare value, String will compare length
-	 * @param array $param When less than, replace value of key 0 with 1
-	 * 
-	 * @return mixed
-	 *
-	 * @throws \jream\Exception 
+	 * @param string $key (Optional) Returns a specific value
+	 * @return mixed Either a string or all items
 	 */
-	function iflt($str, $param)
+	public function get($key = null)
 	{
-		if (count($param) != 2)
-		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
+		if ($key != null)
+		{
+			if (isset($this->_formData[$key]))
+			return $this->_formData[$key];	
 
-		if (is_int($str))
-		{
-			if ($str > $param[0])
-			return $param[1];
+			else
+			return false;			
 		}
-		if (is_string($str))
+		
+		else
 		{
-			if (strlen($str) > $param[0])
-			return $param[1];
+			/**
+			 * This prevents empty key's with empty values from going through,
+			 * I've run into this a few times and couldn't figure out why! 
+			 */
+			return array_filter($this->_formData, 'strlen');
 		}
 	}
 	
 	/**
-	 * ifeq - If equals than, replace with ..
+	 * remove - Remove an internal record
 	 * 
-	 * @param mixed $str Integer will compare value, String will compare value
-	 * @param array $param When equal, replace value of key 0 with 1
-	 * 
-	 * @return mixed
-	 *
-	 * @throws \jream\Exception 
+	 * @param string(s) Pass as many function arguments as needed to unset
+	 *		  eg: form->remove('field', 'field2', 'field3');
+	 * @return boolean 
 	 */
-	function ifeq($str, $param)
+	public function remove($unlimited) // 
 	{
-		if (count($param) != 2)
-		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
-
-		if (is_int($str))
-		{
-			if ($str == $param[0])
-			return $param[1];
+		foreach (func_get_args() as $key => $value) {
+			if (isset($this->_formData[$value]))
+			unset($this->_formData[$value]);
 		}
-		if (is_string($str))
-		{
-			if ($str == $param[0])
-			return $param[1];
-		}
+		
+		return $this;
+	}
+	
+	/**
+	 * dump - Debug & see what is inside the object quickly
+	 */
+	public function dump()
+	{
+		echo '<pre>';
+		print_r($this->_formData);
+		print_r($this->_errorData);
+		echo '</pre>';
 	}
 }
