@@ -251,6 +251,69 @@ class Validate
 	}
 	
 	/**
+	 * age - Checks to see if a person is old enough
+	 * 
+	 * @param string $dob Use MySQL Format YYYY-MM-DD
+	 * @param string $min Minimum age allowed
+	 * 
+	 * @return integer
+	 */
+	public function agemin($dob, $min = 18)
+	{
+		$result = $this->_ageCalc($dob);
+		
+		if ($result <= 0 || $result >= 125)
+		return "invalid date provided";
+		
+		if ($result < $min)
+		return "minimum age is $min";
+	}
+	
+	/**
+	 * age - Checks to see if a person is young enough
+	 * 
+	 * @param string $dob Use MySQL Format YYYY-MM-DD
+	 * @param string $min Minimum age allowed
+	 * 
+	 * @return integer
+	 */
+	public function agemax($dob, $max = 50)
+	{
+		$result = $this->_ageCalc($dob);
+		
+		if ($result <= 0 || $result >= 125)
+		return "invalid date provided";
+		
+		if ($result > $max)
+		return "maximum age is $max";
+	}
+	
+	/**
+	 * _ageCalc - Return the age
+	 *
+	 * @param string $dob Date of birth
+	 *
+	 * @return integer Age based on date calculation
+	 */
+	private function _ageCalc($dob)
+	{
+		/** Make sure a valid string is being passed for the date */
+		if (!preg_match ("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $dob)) {
+			throw new \Exception('date format must be in YYYY-MM-DD');
+		}
+		
+		list($yyyy, $mm, $dd) = explode('-', $dob);
+
+		if (($mm = (date('m') - $mm)) < 0) {
+			$yyyy++;
+		} elseif ($mm == 0 && date('d') - $dd < 0) {
+			$yyyy++;
+		}
+
+		return (int) date('Y') - $yyyy;
+	}
+	
+	/**
 	 * __call - Handles non-existant methods
 	 * 
 	 * @param string $method
