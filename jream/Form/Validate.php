@@ -24,13 +24,23 @@ class Validate
 	public function length($value, $param)
 	{
 
-		if (!is_array($param) || count($param) != 2)
-		throw new Exception(__CLASS__ . ': Length Parameter must be an array of (min/max).');
+		if (!is_array($param) || count($param) > 2)
+		throw new Exception(__CLASS__ . ': Length Parameter must be an array of 1 (exact) or 2 (min/max).');
 
 		$len = strlen($value);
 
-		if ($len < $param[0] || $len > $param[1])
-		return "must be between $param[0] and $param[1] characters.";
+		if (count($param) == 1)
+		{
+			if ($len != $param[0])
+			return "must be exactly $param[0] characters.";
+		}
+		else
+		{
+			if ($len < $param[0] || $len > $param[1])
+			return "must be between $param[0] and $param[1] characters.";
+		}
+		
+		
 	}
 	
 	/**
