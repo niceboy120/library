@@ -12,17 +12,19 @@ require_once '../jream/Autoload.php';
 new jream\Autoload('../jream/');
 
 echo '<pre>';
-echo "<b>Without Salt</b>\n";
+echo "<b>Without Salt</b>" . PHP_EOL;
+
 foreach (hash_algos() as $algo)
 {
-	echo $algo . ": " . jream\Hash::create($algo, 'password') . "\n";
+	echo $algo . ": " . jream\Hash::create($algo, 'password') . PHP_EOL;
 }
 
-echo '<hr />';
-echo "<b>With Salt</b>\n";
+echo PHP_EOL;
+
+echo "<b>With Salt</b>" . PHP_EOL;
 foreach (hash_algos() as $algo)
 {
-	echo $algo . ": " . jream\Hash::create($algo, 'password', 'secret_salted_string!') . "\n";
+	echo $algo . ": " . jream\Hash::create($algo, 'password', 'secret_salted_string!') . PHP_EOL;
 }
 
 

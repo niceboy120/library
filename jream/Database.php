@@ -33,10 +33,16 @@ class Database extends \PDO
 	private $_fetchMode = \PDO::FETCH_ASSOC;
 	 
 	/**
-	 * __construct - Initializes a PDO connection
+	 * __construct - Initializes a PDO connection (Two ways of connecting)
 	 * 
 	 * @param array $db An associative array containing the connection settings,
+	 * @param string $type Optional if using arugments to connect
+	 * @param string $host Optional if using arugments to connect
+	 * @param string $name Optional if using arugments to connect
+	 * @param string $user Optional if using arugments to connect
+	 * @param string $pass Optional if using arugments to connect
 	 *
+	 *  // First Way:
 	 *	$db = array(
 	 *		'type' => 'mysql'
 	 *		,'host' => 'localhost'
@@ -44,11 +50,24 @@ class Database extends \PDO
 	 *		,'user' => 'root'
 	 *		,'pass' => ''
 	 *	);
+	 *  $db = new jream\Database($db);
+	 *
+	 *  // Second Way:
+	 *  $db = new jream\Database(null, 'mysql', 'localhost', 'test', 'root', '');
 	 */
-	public function __construct($db)
+	public function __construct($db, $type = null, $host = null, $name = null, $user = null, $pass = null)
 	{
 		try {
-			parent::__construct("{$db['type']}:host={$db['host']};dbname={$db['name']}", $db['user'], $db['pass']);
+			/** Connect with arguments */
+			if ($db == false || $db == null)
+			{
+				parent::__construct("{$type}:host={$host};dbname={$name}", $user, $pass);
+			}
+			/** Connect with assoc array */
+			else
+			{
+				parent::__construct("{$db['type']}:host={$db['host']};dbname={$db['name']}", $db['user'], $db['pass']);
+			}
 		} catch (PDOException $e) {
 			die($e->getMessage());
 		}

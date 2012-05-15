@@ -8,7 +8,8 @@
  * @link		http://jream.com
  */
 namespace jream;
-class Output {
+class Output 
+{
 	
 	/**
 	 * json - Standard JSON Output

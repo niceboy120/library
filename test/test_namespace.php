@@ -2,10 +2,23 @@
 
 require '../jream/Autoload.php';
 
-new jream\Autoload('../jream');
+use jream\Autoload as Autoload,
+	jream\Database as Database,
+	jream\Exception as Exception,
+	jream\Form as Form,
+	jream\Hash as Hash,
+	jream\Output as Output,
+	jream\Registry as Registry,
+	jream\Session as Session;
 
-use jream\Output as Output;
-use jream\Form as Form;
+new Autoload('../jream');
 
-$f = new Form(array('test' => 'dog'));
+
+new Form();
+$data = 'love';
+Registry::set('life', $data);
+Session::start();
+Session::set('name', 'jesse');
+Session::get('name');
+Hash::create('md5', 'Hi Mom');
 Output::success('test');

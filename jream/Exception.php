@@ -42,13 +42,13 @@ class Exception extends \Exception
 		 * Handle the string if there is one
 		 */
 		if (strlen($message) > 0)
-		$this->_array = array('generic' => $message);
+		$this->_array = array('general' => $message);
 		
 		/** 
 		 * Handle the array
 		 */
 		if (!is_array($array))
-		$this->_array = array('generic' => $array);
+		$this->_array = array('general' => $array);
 			
 		else
 		$this->_array = $array;

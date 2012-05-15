@@ -7,6 +7,7 @@
  *
  * @link		http://jream.com
  * @example
+ *
  * require_once '/jream/Autoload.php';
  * new jream\Autoload('/jream/');
  */
@@ -63,12 +64,12 @@ class Autoload
 		foreach(glob($this->_dir . '*') as $file)  
 		{
 			/** Don't load the autoloader class */
-			if ($file == $this->_dir . $classname . '.php')
+			if ($file == $this->_dir . strtolower($classname) . '.php')
 			continue;
 
 			/** Require the needed files  */
 			if (!is_dir($file))
-			require $file;
+			require strtolower($file);
 			
 			else
 			{
@@ -76,7 +77,7 @@ class Autoload
 				{
 					/** We are only going one folder deep */
 					if (!is_dir($subfile))
-					require $subfile;
+					require strtolower($subfile);
 				}
 			}
 

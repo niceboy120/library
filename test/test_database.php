@@ -11,6 +11,8 @@ require_once '../jream/Autoload.php';
 
 new jream\Autoload('../jream/');
 
+$db = new jream\Database(null, 'mysql', 'localhost', 'jream_test', 'root', '');
+
 $config = array(
 	'type' => 'mysql'
 	,'host' => 'localhost'
