@@ -37,7 +37,7 @@ class Format
 	 *
 	 * @return string
 	 */
-	function upper($str)
+	public function upper($str)
 	{
 		return strtoupper($str);
 	}
@@ -49,7 +49,7 @@ class Format
 	 *
 	 * @return string
 	 */	
-	function lower($str)
+	public function lower($str)
 	{
 		return strtolower($str);
 	}
@@ -64,7 +64,7 @@ class Format
 	 * 
 	 * @throws \jream\Exception 
 	 */
-	function replace($str, $param)
+	public function replace($str, $param)
 	{
 		if (count($param) != 2)
 		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
@@ -80,7 +80,7 @@ class Format
 	 *
 	 * @return string
 	 */
-	function iftrue($str, $param)
+	public function iftrue($str, $param)
 	{
 		if (!empty($str))
 		return $param[0];
@@ -94,7 +94,7 @@ class Format
 	 *
 	 * @return string
 	 */
-	function iffalse($str, $param)
+	public function iffalse($str, $param)
 	{
 		if (empty($str))
 		return $param[0];
@@ -110,7 +110,7 @@ class Format
 	 *
 	 * @throws \jream\Exception 
 	 */
-	function ifgt($str, $param)
+	public function ifgt($str, $param)
 	{
 		if (count($param) != 2)
 		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace')	;
@@ -137,7 +137,7 @@ class Format
 	 *
 	 * @throws \jream\Exception 
 	 */
-	function iflt($str, $param)
+	public function iflt($str, $param)
 	{
 		if (count($param) != 2)
 		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
@@ -164,7 +164,7 @@ class Format
 	 *
 	 * @throws \jream\Exception 
 	 */
-	function ifeq($str, $param)
+	public function ifeq($str, $param)
 	{
 		if (count($param) != 2)
 		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: find, replace');
@@ -179,5 +179,19 @@ class Format
 			if ($str == $param[0])
 			return $param[1];
 		}
+	}
+	
+	/**
+	 * checkbox - Formats a checkbox to a 1 or 0 if its ticked
+	 *
+	 * @param string $str 
+	 */
+	public function checkbox($str)
+	{
+		if ($str == 'on')
+		return 1;
+		
+		else
+		return 0;
 	}
 }

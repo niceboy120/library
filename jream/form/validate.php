@@ -39,8 +39,6 @@ class Validate
 			if ($len < $param[0] || $len > $param[1])
 			return "must be between $param[0] and $param[1] characters.";
 		}
-		
-		
 	}
 	
 	/**
@@ -114,8 +112,7 @@ class Validate
 	{
 		if (!is_int($param))
 		throw new jream\Exception(__CLASS__ .": must supply an integer: $method");
-		echo $value;
-		echo $param;
+
 		if ($value >= $param)
 		return "must be less than $param";
 	}
@@ -196,19 +193,6 @@ class Validate
 	{
 		if (!is_float($value))
 		return 'must be a float.';
-	}
-	
-	/**
-	 * boolean - Require boolean value
-	 *
-	 * @param float $value
-	 *
-	 * @return string For an error
-	 */
-	public function boolean($value)
-	{
-		if (!is_bool($value))
-		return 'must be boolean.';
 	}
 	
 	/**
