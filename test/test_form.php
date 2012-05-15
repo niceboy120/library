@@ -81,11 +81,39 @@ try {
 }
 
 try {
-	$form = new jream\Form(array('name' => 'Jesse'));
+	$form = new jream\Form(array('name' => 'Jesse', 'age' => 25, 'gender' => 'm'));
 	$form	->post('name')
-			->validate('maxlength', 4);
+			->validate('maxlength', 4)
+			->error('This is a custom error message')
+			
+			->post('age')
+			->validate('eq', 12)
+			
+			->post('gender')
+			->validate('eq', 'f');
 			
 	$form->submit();
 } catch (Exception $e) {
 	echo $e->getMessage() . '<br />';
+}
+
+
+echo '<hr />';
+
+// For some JS money money money...
+try {
+	$form = new jream\Form(array('name' => 'Jesse', 'age' => 25, 'gender' => 'm'));
+	$form	->post('name')
+			->validate('maxlength', 4)
+			->error('This is a custom error message')
+			
+			->post('age')
+			->validate('eq', 12)
+			
+			->post('gender')
+			->validate('eq', 'f');
+			
+	$form->submit();
+} catch (jream\Exception $e) {
+	$z = $e->getArray();
 }

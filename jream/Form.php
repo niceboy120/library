@@ -192,6 +192,25 @@ class Form
 	}
 	
 	/**
+	 * error - Set a custom error message immediately after calling validate()
+	 *
+	 * @param string $msg The text to display if an error fires
+	 *
+	 * @return object
+	 */
+	public function error($msg)
+	{
+		$key = $this->_currentRecord['key'];
+		if (isset($this->_errorData[$key]))
+		{
+			$this->_errorData[$key] = $msg;
+		}
+		
+		return $this;
+
+	}
+	
+	/**
 	 * submit - Processes the entire form and gather errors if any exist
 	 *
 	 * @param boolean $preserveTemp Keep the previous post data inside a Session 

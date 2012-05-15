@@ -1,0 +1,93 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"> 
+<head>
+	<title>Test Form JS</title>
+	<meta charset="utf-8" />
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+	
+	<link rel="stylesheet" href="css/style.css" />
+	
+	<style>
+	.error {
+		border: 2px solid red;
+	}
+	
+	label.e {
+		font: 11px arial;
+		padding: 5px;
+		color: red;
+		float: right;
+	}
+	</style>
+	
+	<script>
+	$(function() {
+		$("#test_form").submit(function() {
+			var url = $(this).attr('action');
+			var postData = $(this).serialize();
+			
+			
+			$('*').removeClass('error');
+			$('label.error').remove();
+				
+			$.post(url, postData, function(o) {
+				
+				if (o.success == 1) {
+					$("#output").html("Looks good, All Good!");
+				} else {
+					console.log(o.errorMessage); // Doesnt work in IE w/o console open
+					for (var key in o.errorMessage) {
+					   var error = o.errorMessage[key];
+					   
+					   $("#"+key).addClass('error');
+					   $("#"+key).after('<label class="e">'+error+'</label>');
+					}
+				}
+			
+			});
+		
+			return false;
+		});
+	});
+	</script>
+</head>
+<body>
+
+<!-- start:Wrap -->
+<div id="wrap">
+
+<header>
+	<h1>Test Form JS</h1>
+</header>
+
+<!-- start:Content -->
+<div id="content">
+
+<h2>Form Example</h2>
+
+<div id="output">
+
+</div>
+
+<form id="test_form" action="test_form_js.php">
+	<label>Name</label><input id="name" name="name" type="text" /><br />
+	<label>Age</label><input id="age" name="age" type="text" /><br />
+	<label>Gender</label><select id="gender" name="gender">
+		<option value="m">Male</option>
+		<option value="f">Female</option>
+	</select><br />
+	<label></label><input type="submit" />
+</form>
+
+</div>
+<!-- end:Content -->
+
+<footer>
+	(C) 2012 Jesse Boyer &lt;http://jream.com&gt;
+</footer>
+
+</div>
+<!-- end:Wrap -->
+</body>
+</html>

@@ -12,6 +12,7 @@ require_once '../jream/Autoload.php';
 
 new jream\Autoload('../jream/');
 
+
 echo '<pre>';
 try {
 	throw new jream\Exception('Regular way');
@@ -25,4 +26,13 @@ try {
 	throw new jream\Exception(null, array('error_1', 'error_2'));
 } catch (jream\Exception $e) {
 	print_r($e->getArray());
+}
+
+echo PHP_EOL;
+
+
+try {
+	throw new jream\Exception('Throwing jream\Exception and catching with \Exception', array('ignored stuff'));
+} catch (Exception $e) {
+	print_r($e->getMessage());
 }
