@@ -27,7 +27,7 @@ class Output
 	 * 
 	 * @param string $data Content to encode
 	 */
-	public static function success($data)
+	public static function success($data = null)
 	{
 		header('Content-type: application/json');
 		echo json_encode(array('success' => 1, 'errorMessage' => null, 'data' => $data));
@@ -38,18 +38,10 @@ class Output
 	 * 
 	 * @param string $errorMessage 
 	 */
-	public function error($errorMessage)
+	public function error($errorMessage = null)
 	{
 		header('Content-type: application/json');
 		echo json_encode(array('success' => 0, 'errorMessage' => $errorMessage, 'data' => null));
-	}
-	
-	/**
-	 * custom - Output custom type (Would this ever be useful?)
-	 */
-	public function custom()
-	{
-		
 	}
 
 }
