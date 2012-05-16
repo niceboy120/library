@@ -25,7 +25,7 @@ class Validate
 	{
 
 		if (!is_array($param) || count($param) > 2)
-		throw new jream\Exception(__CLASS__ . ': Length Parameter must be an array of 1 (exact) or 2 (min/max).');
+		throw new \jream\Exception(__CLASS__ . ': Length Parameter must be an array of 1 (exact) or 2 (min/max).');
 
 		$len = strlen($value);
 
@@ -94,7 +94,7 @@ class Validate
 	public function gt($value, $param)
 	{
 		if (!is_int($param))
-		throw new jream\Exception(__CLASS__ .": must supply an integer: $method");
+		throw new \jream\Exception(__CLASS__ .": must supply an integer: $method");
 		
 		if ($value <= $param)
 		return "must be greater than $param";
@@ -111,7 +111,7 @@ class Validate
 	public function lt($value, $param)
 	{
 		if (!is_int($param))
-		throw new jream\Exception(__CLASS__ .": must supply an integer: $method");
+		throw new \jream\Exception(__CLASS__ .": must supply an integer: $method");
 
 		if ($value >= $param)
 		return "must be less than $param";
@@ -151,7 +151,7 @@ class Validate
 		}
 
 		if (!is_array($param))
-		throw new jream\Exception(__CLASS__ . ': matchAny $param must be any array');
+		throw new \jream\Exception(__CLASS__ . ': matchAny $param must be any array');
 		
 		if (!in_array($value, $param))
 		return "is not valid";
@@ -283,7 +283,7 @@ class Validate
 	{
 		/** Make sure a valid string is being passed for the date */
 		if (!preg_match ("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $dob)) {
-			throw new jream\Exception('date format must be in YYYY-MM-DD');
+			throw new \jream\Exception('date format must be in YYYY-MM-DD');
 		}
 		
 		list($yyyy, $mm, $dd) = explode('-', $dob);
@@ -335,7 +335,7 @@ class Validate
 				return $this->lt($args[0][0], $args[0][1]);
 				break;
 			default:
-				throw new jream\Exception(__CLASS__ .": Does not have any method called: $method");		
+				throw new \jream\Exception(__CLASS__ .": Does not have any method called: $method");		
 		}
 	}
 }

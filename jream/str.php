@@ -7,10 +7,20 @@
  *
  * @link		http://jream.com
  */
-require_once '../jream/autoload.php';
+namespace jream;
+class Str
+{
 
-new jream\Autoload('../jream/');
+		public static function fileExt()
+		{
+			echo 'Not developed yet';
+		}
+		
+		public static function fileName()
+		{
+			echo 'Not developed yet';
+		}
+		
+		
 
-jream\Output::error('hello');
-//jream\Output::success('hello');
-//jream\Output::json('hello');
+}

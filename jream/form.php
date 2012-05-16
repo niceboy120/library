@@ -70,7 +70,7 @@ class Form
 			
 			/** Note: Using jream Exception (Within jream namespace) */
 			else
-			throw new Exception('Passing a mimic value that is does not match in your Form posts'); 
+			throw new \jream\Exception('Passing a mimic value that is does not match in your Form posts'); 
 		}
 		else
 		{
@@ -112,7 +112,7 @@ class Form
 	*/
 	public function request($name, $required = false)
 	{
-		throw new \Exception('This feature is not built yet.');
+		throw new \jream\Exception('This feature is not built yet.');
 	}
 	
 	/**
@@ -244,7 +244,7 @@ class Form
 			
 			/** Note: Using jream Exception (Within jream namespace) */
 			/** Throw our custom Form Exception for outputting a string or array */
-			throw new Exception($output, $this->_errorData);
+			throw new \jream\Exception($output, $this->_errorData);
 		}
 	}
 	

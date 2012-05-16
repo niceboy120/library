@@ -5,7 +5,7 @@ This class is used to autoload any directory upon instantiation.
 Example of using the Autoloader:
 
 	<?php
-	require_once 'jream/Autoload.php';
+	require_once 'jream/autoload.php';
     new jream\Autoload('jream/');
 
 Recursion goes one sub-folder deep, that means the deepest it will go is: 

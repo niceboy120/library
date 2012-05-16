@@ -4,7 +4,7 @@
 To run the MVC pattern you begin with an empty file utilizing the bootstrap:
 
     <?php
-    require_once 'jream/Autoload.php';
+    require_once 'jream/autoload.php';
 
     new jream\Autoload('jream/');
     

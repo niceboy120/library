@@ -11,6 +11,10 @@ require_once '../jream/autoload.php';
 
 new jream\Autoload('../jream/');
 
-jream\Output::error('hello');
+jream\Str::fileExt();
+
+
+
+
 //jream\Output::success('hello');
 //jream\Output::json('hello');

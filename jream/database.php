@@ -106,7 +106,7 @@ class Database extends \PDO
 		}
 	
 		if ($sth->execute() == false) {
-			throw new jream\Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+			throw new \jream\Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
 		}
 	
 		/** Throw an exception for an error */
@@ -143,7 +143,7 @@ class Database extends \PDO
 		}
 
 		if ($sth->execute() == false) {
-			throw new jream\Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+			throw new \jream\Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
 		}
 		
 		/** Throw an exception for an error */
@@ -183,7 +183,7 @@ class Database extends \PDO
 
 		$result = $sth->execute();
 		if ($result == false) {
-			throw new \Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
+			throw new \jream\Exception(__CLASS__ .'::'. __FUNCTION__ . " did not execute properly");
 		}
 		
 		$this->_handleError();
@@ -317,7 +317,7 @@ class Database extends \PDO
 	private function _handleError()
 	{
 		if ($this->errorCode() != '00000')
-		throw new jream\Exception("Error: " . implode(',', $this->errorInfo()));
+		throw new \jream\Exception("Error: " . implode(',', $this->errorInfo()));
 	}
 	
 }

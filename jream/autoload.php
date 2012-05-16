@@ -8,7 +8,7 @@
  * @link		http://jream.com
  * @example
  *
- * require_once '/jream/Autoload.php';
+ * require_once '/jream/autoload.php';
  * new jream\Autoload('/jream/');
  */
 namespace jream;

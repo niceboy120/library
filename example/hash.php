@@ -7,7 +7,7 @@
  *
  * @link		http://jream.com
  */
-require_once '../jream/Autoload.php';
+require_once '../jream/autoload.php';
 
 new jream\Autoload('../jream/');
 

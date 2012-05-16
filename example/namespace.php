@@ -1,6 +1,6 @@
 <?php
 
-require '../jream/Autoload.php';
+require '../jream/autoload.php';
 
 use jream\Autoload as Autoload,
 	jream\Database as Database,
