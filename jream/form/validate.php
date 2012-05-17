@@ -246,7 +246,7 @@ class Validate
 	{
 		try {
 			$result = $this->_ageCalc($dob);
-		} catch(jream\Exception $e) {
+		} catch(\jream\Exception $e) {
 			return $e->getMessage();
 		}
 		
@@ -269,7 +269,7 @@ class Validate
 	{
 		try {
 			$result = $this->_ageCalc($dob);
-		} catch(jream\Exception $e) {
+		} catch(\jream\Exception $e) {
 			return $e->getMessage();
 		}
 		
