@@ -87,7 +87,7 @@ try {
 			->error('This is a custom error message')
 			
 			->post('age')
-			->validate('eq', 12)
+			->validate('agemin', 12)
 			
 			->post('gender')
 			->validate('eq', 'f');

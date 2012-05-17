@@ -13,6 +13,7 @@ class Str
 
 		public static function fileExt()
 		{
+			// What if its tar.gz? How to get file ext?
 			echo 'Not developed yet';
 		}
 		

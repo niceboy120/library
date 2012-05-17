@@ -244,7 +244,11 @@ class Validate
 	 */
 	public function agemin($dob, $min = 18)
 	{
-		$result = $this->_ageCalc($dob);
+		try {
+			$result = $this->_ageCalc($dob);
+		} catch(jream\Exception $e) {
+			return $e->getMessage();
+		}
 		
 		if ($result <= 0 || $result >= 125)
 		return "invalid date provided";
@@ -263,7 +267,11 @@ class Validate
 	 */
 	public function agemax($dob, $max = 50)
 	{
-		$result = $this->_ageCalc($dob);
+		try {
+			$result = $this->_ageCalc($dob);
+		} catch(jream\Exception $e) {
+			return $e->getMessage();
+		}
 		
 		if ($result <= 0 || $result >= 125)
 		return "invalid date provided";
