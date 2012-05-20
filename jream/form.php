@@ -23,6 +23,11 @@ class Form
 	private $_validate = false;
 	
 	/** 
+	 * @var object $_file The file object. Only instantiated if the method is called.
+	 */
+	private $_file = false;
+		
+	/** 
 	 * @var array $_formData Holds the POSTED data inside the object for post-processing 
 	 */
 	private $_formData = array();
@@ -192,6 +197,42 @@ class Form
 	}
 	
 	/**
+	 * file - Uploads a file (Do not call validate, format, or error after this)
+	 * 
+	 * @param string $name The name of the field you are saving
+	 * @param string $directory The directory location
+	 * @param string $saveAs (Default: false) The name to save the file path, include the extension. (false uses the original file name)
+	 * @param boolean $overwrite (Default: true) Overwrite the file if it exists? 
+	 * 
+	 * @return object
+	 */
+	public function file($name, $directory, $saveAs = false, $overwrite = true, $required = false)
+	{
+		/** Instantiate the file class only if it's used */
+		if ($this->_file == false)
+		$this->_file = new Form\File();
+		
+		try {
+			
+			if ($required == true && ($_FILES[$name]['error'] != 0))
+			{
+				$this->_errorData[$name] = 'file upload is required';
+			}
+			else
+			{
+				/** This does not upload the file yet, it checks for errors, upload happens if there are no standard form errors on submit() */
+				$this->_file->uploadPrepare($name, $directory, $saveAs, $overwrite); // Exception
+			}		
+			
+		} catch(\jream\Exception $e) {
+			/** The $name is unique within a form, so an error can be set here with no worries */
+			$this->_errorData[$name] = $e->getMessage();
+		}
+		
+		return $this;		
+	}
+	
+	/**
 	 * error - Set a custom error message immediately after calling validate()
 	 *
 	 * @param string $msg The text to display if an error fires
@@ -220,17 +261,23 @@ class Form
 	public function submit($preserveTemp = false)
 	{
 		/** Preserve form data before we kill it */
-		if ($preserveTemp && isset($_SESSION['form_temp'])) 
+		if ($preserveTemp && isset($_SESSION['form']['tmp'])) 
 		{
 			/** Remove the Previous set */
-			unset($_SESSION['form_temp']);
+			unset($_SESSION['form']['tmp']);
 			
 			/** Update the new set */
-			$_SESSION['form_temp'] = $this->get();
+			$_SESSION['form']['tmp'] = $this->get();
 		}
 
 		if (count($this->_errorData) == 0)
 		{
+			if ($this->_file != false) 
+			{
+				/** If the file is at this point, it had no problems with the requirement standards or any other errors */
+				$this->_file->uploadSave();
+			}
+			
 			return false;
 		}
 		else
@@ -277,26 +324,29 @@ class Form
 	 * 
 	 * @param string(s) Pass as many function arguments as needed to unset
 	 *		  eg: form->remove('field', 'field2', 'field3');
-	 * @return boolean 
+	 *
+	 * @return object
 	 */
 	public function remove($unlimited) // 
 	{
 		foreach (func_get_args() as $key => $value) {
 			if (isset($this->_formData[$value]))
 			unset($this->_formData[$value]);
-		}
-		
+		}		
 		
 		return $this;
 	}
 	
 	/**
-	 * dump - Debug & see what is inside the object quickly
+	 * debug- Debug & see what is inside the object quickly
 	 */
-	public function dump()
+	public function debug()
 	{
 		echo '<pre>';
+		echo '$this->_formData' . "\n";
 		print_r($this->_formData);
+		echo "\n\n";
+		echo '$this->_errorData' . "\n";
 		print_r($this->_errorData);
 		echo '</pre>';
 	}
