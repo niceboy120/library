@@ -194,4 +194,28 @@ class Format
 		else
 		return 0;
 	}
+	
+	/**
+	 * toint - Cast to an integer
+	 * 
+	 * @param string $str
+	 * 
+	 * @return integer
+	 */
+	public function toint($str)
+	{
+		return (integer) $str;
+	}
+	
+	/**
+	 * tostr - Cast to string
+	 * 
+	 * @param string $str
+	 * 
+	 * @return string
+	 */
+	public function tostr($str)
+	{
+		return (string) $str;
+	}
 }
