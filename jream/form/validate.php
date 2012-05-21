@@ -127,7 +127,7 @@ class Validate
 	 */
 	public function eq($value, $param)
 	{
-		if ($value !== $param)
+		if ($value != $param)
 		return "does not match";
 	}
 	
