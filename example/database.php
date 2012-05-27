@@ -26,6 +26,7 @@ echo '<pre>';
 
 $db = new jream\Database($config);
 
+$db->replace('user', array('name' => '123s', 'userid' => '10001'));
 $db->insert('user', array('name' => 'Jesse'));
 $db->update('user', array('name' => 'Other'), "userid = '10002'");
 $db->delete('user', "userid = '10000'");

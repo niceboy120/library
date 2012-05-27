@@ -133,18 +133,22 @@ class Database extends \PDO
 		/** Prepare SQL Code */
 		$insertString = $this->_prepareInsertString($data);
 
-		/** Output the code for Debugging */
-		if ($showSQL) echo "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
+		/** Prepare SQL Code */
+		$sql = "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
 		
-		/** Run Query and Bind the Values */
-		$sth = $this->prepare("INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})");
+		/** Output the code for Debugging */
+		if ($showSQL) echo $sql;
+		
+		/** Bind Values */
+		$sth = $this->prepare($sql);
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
 		}
 
+		/** Execute Query */
 		if ($sth->execute() == false) {
-			$error = __CLASS__ .'::'. __FUNCTION__ . " did not execute properly";
+			$error =  __FUNCTION__ . " did not execute properly";
 			throw new \jream\Exception($error, $error);
 		}
 		
@@ -176,20 +180,66 @@ class Database extends \PDO
 		/** Optionally output the SQL */
 		if ($showSQL) echo $sql;
 		
-		/** Run Query and Bind the Values */
-		$sth = $this->prepare("UPDATE $table SET $updateString WHERE $where");
+		/** Bind Values */
+		$sth = $this->prepare($sql);
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
 		}
 
+		/** Execute Query */
 		$result = $sth->execute();
 		if ($result == false) {
-			$error = __CLASS__ .'::'. __FUNCTION__ . " did not execute properly";
+			$error =  __FUNCTION__ . " did not execute properly";
 			throw new \jream\Exception($error, $error);
 		}
-		
+
+		/** Throw an exception for an error */
 		$this->_handleError();
+		
+		/** Return Result */
+		return $result;
+	}
+	
+	/**
+	 * replace - Convenience method to replace into the database
+	 * 			 Note: Replace does a Delete and Insert 
+	 *
+	 * @param string $table The table to update
+	 * @param array $data An associative array of fields to change: field => value
+	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
+	 *
+	 * @return boolean Successful or not
+	 */
+	public function replace($table, $data, $showSQL = false)
+	{
+		/** Build the Update String */
+		$updateString = $this->_prepareUpdateString($data);
+
+		/** Prepare SQL Code */
+		$sql = "REPLACE INTO $table SET $updateString";
+		
+		/** Optionally output the SQL */
+		if ($showSQL) echo $sql;
+		
+		/** Bind Values */
+		$sth = $this->prepare($sql);
+		foreach ($data as $key => $value)
+		{
+			$sth->bindValue(":$key", $value);
+		}
+
+		/** Execute Query */
+		$result = $sth->execute();
+		if ($result == false) {
+			$error =  __FUNCTION__ . " did not execute properly";
+			throw new \jream\Exception($error, $error);
+		}
+
+		/** Throw an exception for an error */
+		$this->_handleError();
+		
+		/** Return Result */
 		return $result;
 	}
 	
