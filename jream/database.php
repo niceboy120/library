@@ -22,14 +22,13 @@ namespace jream;
 class Database extends \PDO
 {
 
-	/**
-	 * @var boolean $activeTransaction Whether a transaction is going on
-	 */
+	/** @var boolean $activeTransaction Whether a transaction is going on */
 	public $activeTransaction;
 	
-	/** 
-	 * @var constant $_fetchMode The select statement fetch mode 
-	 */
+	/** @var string $_sql Stores the last SQL command */
+	private $_sql;
+	
+	/** @var constant $_fetchMode The select statement fetch mode */
 	private $_fetchMode = \PDO::FETCH_ASSOC;
 	 
 	/**
@@ -98,8 +97,15 @@ class Database extends \PDO
 	 */
 	public function select($query, $bindParams = array(), $overrideFetchMode = null)
 	{
+		/** Store the SQL for use with fetching it when desired */
+		$this->_sql = $query;
+		
+		/** Make sure bindParams is an array, I mess this up a lot when overriding fetch! */
+		if (!is_array($bindParams))
+		throw new \jream\Exception("$bindParams must be an array");
+		
 		/** Run Query and Bind the Values */
-		$sth = $this->prepare($query);
+		$sth = $this->prepare($this->_sql);
 		foreach($bindParams as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -125,22 +131,17 @@ class Database extends \PDO
 	 *
 	 * @param string $table	The table to insert into
 	 * @param array $data	An associative array of data: field => value
-	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
 	 */
-	public function insert($table, $data, $showSQL = false)
-	{
-	
+	public function insert($table, $data)
+	{	
 		/** Prepare SQL Code */
 		$insertString = $this->_prepareInsertString($data);
 
-		/** Prepare SQL Code */
-		$sql = "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
-		
-		/** Output the code for Debugging */
-		if ($showSQL) echo $sql;
+		/** Store the SQL for use with fetching it when desired */
+		$this->_sql = "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']})";
 		
 		/** Bind Values */
-		$sth = $this->prepare($sql);
+		$sth = $this->prepare($this->_sql);
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -165,23 +166,19 @@ class Database extends \PDO
 	 * @param string $table The table to update
 	 * @param array $data An associative array of fields to change: field => value
 	 * @param string $where A condition on where to apply this update
-	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
 	 *
 	 * @return boolean Successful or not
 	 */
-	public function update($table, $data, $where, $showSQL = false)
+	public function update($table, $data, $where)
 	{
 		/** Build the Update String */
 		$updateString = $this->_prepareUpdateString($data);
 
-		/** Prepare SQL Code */
-		$sql = "UPDATE $table SET $updateString WHERE $where";
-		
-		/** Optionally output the SQL */
-		if ($showSQL) echo $sql;
+		/** Store the SQL for use with fetching it when desired */
+		$this->_sql = "UPDATE $table SET $updateString WHERE $where";
 		
 		/** Bind Values */
-		$sth = $this->prepare($sql);
+		$sth = $this->prepare($this->_sql);
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -207,23 +204,19 @@ class Database extends \PDO
 	 *
 	 * @param string $table The table to update
 	 * @param array $data An associative array of fields to change: field => value
-	 * @param boolean $showSQL (Default = false) Show the SQL Code being processed?
 	 *
 	 * @return boolean Successful or not
 	 */
-	public function replace($table, $data, $showSQL = false)
+	public function replace($table, $data)
 	{
 		/** Build the Update String */
 		$updateString = $this->_prepareUpdateString($data);
 
 		/** Prepare SQL Code */
-		$sql = "REPLACE INTO $table SET $updateString";
-		
-		/** Optionally output the SQL */
-		if ($showSQL) echo $sql;
+		$this->_sql = "REPLACE INTO $table SET $updateString";
 		
 		/** Bind Values */
-		$sth = $this->prepare($sql);
+		$sth = $this->prepare($this->_sql);
 		foreach ($data as $key => $value)
 		{
 			$sth->bindValue(":$key", $value);
@@ -248,19 +241,25 @@ class Database extends \PDO
 	*
 	* @param string $table The table to delete from
 	* @param string $where A condition on where to apply this call
-	* @param boolean $showSQL (Default = false) Show the SQL Code being processed?
 	* 
 	* @return integer Total affected rows
 	*/
-	public function delete($table, $where, $showSQL = false)
+	public function delete($table, $where)
 	{
 		/** Prepare SQL Code */
-		$sql = "DELETE FROM $table WHERE $where";
+		$this->_sql = "DELETE FROM $table WHERE $where";
 	
-		/** Optionally output the SQL */
-		if ($showSQL) echo $sql;
-		
-		return $this->exec($sql);
+		return $this->exec($this->_sql);
+	}
+	
+	/**
+	 * getQuery - Return the last sql Query called
+	 * 
+	 * @return string
+	 */
+	public function getQuery()
+	{
+		return $this->_sql;
 	}
 		
 	/**
@@ -330,7 +329,6 @@ class Database extends \PDO
 	 */
 	private function _prepareInsertString($data) 
 	{
-		ksort($data);
 		/** 
 		* @ Incoming $data looks like:
 		* $data = array('field' => 'value', 'field2'=> 'value2');
@@ -349,8 +347,6 @@ class Database extends \PDO
 	 */
 	private function _prepareUpdateString($data) 
 	{
-		ksort($data);
-
 		/**
 		* @ Incoming $data looks like:
 		* $data = array('field' => 'value', 'field2'=> 'value2');

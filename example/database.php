@@ -27,9 +27,14 @@ echo '<pre>';
 $db = new jream\Database($config);
 
 $db->replace('user', array('name' => '123s', 'userid' => '10001'));
+echo $db->getQuery();
+
 $db->insert('user', array('name' => 'Jesse'));
+echo $db->getQuery();
 $db->update('user', array('name' => 'Other'), "userid = '10002'");
+echo $db->getQuery();
 $db->delete('user', "userid = '10000'");
+echo $db->getQuery();
 
 $db->setFetchMode(\PDO::FETCH_ASSOC);
 $result = $db->select('SELECT * FROM user', array());
