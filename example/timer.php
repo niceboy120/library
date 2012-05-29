@@ -8,16 +8,18 @@
  * @link		http://jream.com
  */
 require_once '../jream/autoload.php';
+new jream\Autoload('../jream');
 
-new jream\Autoload('../jream/');
+echo '<pre>';
 
-jream\Route::create('test', function() {
+jream\Timer::start(1);
+echo jream\Timer::stop(1);
+echo "\n";
 
-	echo 1;
-});
+jream\Timer::start('iteration');
 
-
-
-
-//jream\Output::success('hello');
-//jream\Output::json('hello');
+for ($i = 0; $i < 100000; $i++)
+{
+	new stdClass();
+}
+echo jream\Timer::stop('iteration');

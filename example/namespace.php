@@ -2,14 +2,14 @@
 
 require '../jream/autoload.php';
 
-use jream\Autoload as Autoload,
-	jream\Database as Database,
-	jream\Exception as Exception,
-	jream\Form as Form,
-	jream\Hash as Hash,
-	jream\Output as Output,
-	jream\Registry as Registry,
-	jream\Session as Session;
+use jream\Autoload,
+	jream\Database,
+	jream\Exception,
+	jream\Form,
+	jream\Hash,
+	jream\Output,
+	jream\Registry,
+	jream\Session;
 
 new Autoload('../jream');
 
