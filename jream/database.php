@@ -111,13 +111,10 @@ class Database extends \PDO
 			$sth->bindValue(":$key", $value);
 		}
 	
-		if ($sth->execute() == false) {
-			$error = __CLASS__ .'::'. __FUNCTION__ . " did not execute properly";
-			throw new \jream\Exception($error, $error);
-		}
-	
+		$result = $sth->execute();
+		
 		/** Throw an exception for an error */
-		$this->_handleError();
+		$this->_handleError($result, __FUNCTION__);
 		
 		/** Automatically return all the goods */
 		if ($overrideFetchMode != null)
@@ -148,13 +145,10 @@ class Database extends \PDO
 		}
 
 		/** Execute Query */
-		if ($sth->execute() == false) {
-			$error =  __FUNCTION__ . " did not execute properly";
-			throw new \jream\Exception($error, $error);
-		}
+		$result = $sth->execute();
 		
 		/** Throw an exception for an error */
-		$this->_handleError();
+		$this->_handleError($result, __FUNCTION__);
 		
 		/** Return the insert id */
 		return $this->lastInsertId();
@@ -166,10 +160,11 @@ class Database extends \PDO
 	 * @param string $table The table to update
 	 * @param array $data An associative array of fields to change: field => value
 	 * @param string $where A condition on where to apply this update
+	 * @param array $bindWhereParams If $where has parameters, apply them here
 	 *
 	 * @return boolean Successful or not
 	 */
-	public function update($table, $data, $where)
+	public function update($table, $data, $where, $bindWhereParams = array())
 	{
 		/** Build the Update String */
 		$updateString = $this->_prepareUpdateString($data);
@@ -184,15 +179,17 @@ class Database extends \PDO
 			$sth->bindValue(":$key", $value);
 		}
 
+		/** Bind Where Params */
+		foreach($bindWhereParams as $key => $value)
+		{
+			$sth->bindValue(":$key", $value);
+		}
+		
 		/** Execute Query */
 		$result = $sth->execute();
-		if ($result == false) {
-			$error =  __FUNCTION__ . " did not execute properly";
-			throw new \jream\Exception($error, $error);
-		}
-
+		
 		/** Throw an exception for an error */
-		$this->_handleError();
+		$this->_handleError($result, __FUNCTION__);
 		
 		/** Return Result */
 		return $result;
@@ -224,13 +221,9 @@ class Database extends \PDO
 
 		/** Execute Query */
 		$result = $sth->execute();
-		if ($result == false) {
-			$error =  __FUNCTION__ . " did not execute properly";
-			throw new \jream\Exception($error, $error);
-		}
 
 		/** Throw an exception for an error */
-		$this->_handleError();
+		$this->_handleError($result, __FUNCTION__);
 		
 		/** Return Result */
 		return $result;
@@ -241,15 +234,30 @@ class Database extends \PDO
 	*
 	* @param string $table The table to delete from
 	* @param string $where A condition on where to apply this call
+	* @param array $bindWhereParams If $where has parameters, apply them here
 	* 
 	* @return integer Total affected rows
 	*/
-	public function delete($table, $where)
+	public function delete($table, $where, $bindWhereParams = array())
 	{
 		/** Prepare SQL Code */
 		$this->_sql = "DELETE FROM $table WHERE $where";
-	
-		return $this->exec($this->_sql);
+		
+		/** Bind Values */
+		$sth = $this->prepare($this->_sql);
+		foreach ($bindWhereParams as $key => $value)
+		{
+			$sth->bindValue(":$key", $value);
+		}
+		
+		/** Execute Query */
+		$result = $sth->execute();
+
+		/** Throw an exception for an error */
+		$this->_handleError($result, __FUNCTION__);
+		
+		/** Return Result */
+		return $sth->rowCount();
 	}
 	
 	/**
@@ -363,10 +371,17 @@ class Database extends \PDO
 	/**
 	* _handleError - Handles errors with PDO and throws an exception.
 	*/
-	private function _handleError()
+	private function _handleError($result, $method)
 	{
+		/** If it's an SQL error */
 		if ($this->errorCode() != '00000')
 		throw new \jream\Exception("Error: " . implode(',', $this->errorInfo()));
+		
+		if ($result == false) 
+		{
+			$error =  $method . " did not execute properly";
+			throw new \jream\Exception($error, $error);
+		}
 	}
 	
 }
