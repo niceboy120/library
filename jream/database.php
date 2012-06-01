@@ -261,6 +261,38 @@ class Database extends \PDO
 	}
 	
 	/**
+	 * insertUpdate - Convenience method to insert/if key exists update.
+	 *
+	 * @param string $table	The table to insert into
+	 * @param array $data	An associative array of data: field => value
+	 */
+	public function insertUpdate($table, $data)
+	{
+		/** Prepare SQL Code */
+		$insertString = $this->_prepareInsertString($data);
+		$updateString = $this->_prepareUpdateString($data);
+
+		/** Store the SQL for use with fetching it when desired */
+		$this->_sql = "INSERT INTO $table (`{$insertString['names']}`) VALUES({$insertString['values']}) ON DUPLICATE KEY UPDATE $updateString";
+		
+		/** Bind Values */
+		$sth = $this->prepare($this->_sql);
+		foreach ($data as $key => $value)
+		{
+			$sth->bindValue(":$key", $value);
+		}
+
+		/** Execute Query */
+		$result = $sth->execute();
+		
+		/** Throw an exception for an error */
+		$this->_handleError($result, __FUNCTION__);
+		
+		/** Return the insert id */
+		return $this->lastInsertId();	
+	}
+	
+	/**
 	 * getQuery - Return the last sql Query called
 	 * 
 	 * @return string
