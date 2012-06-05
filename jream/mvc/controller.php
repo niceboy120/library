@@ -8,26 +8,27 @@
  * @link		http://jream.com
  */
 namespace jream\MVC;
+use \jream\Registry;
 class Controller
 {
 
-	/**
-	 * @var object $view Set from the bootstrap
-	 */
+	/** @var object $view Set from the bootstrap */
 	public $view;
 	
-	/**
-	 * @var object $model Set from the bootstrap
-	 */
+	/** @var object $model Set from the bootstrap */
 	public $model;
+	
+	/** @var array $segments The URI segments */
+	public $segments;
 
 	/**
 	* __construct - Required
 	*/
 	public function __construct() 
 	{
-		$this->view = \jream\Registry::get('view');
-		$this->model = \jream\Registry::get('model');
+		$this->segments = Registry::get('segments');
+		$this->view = Registry::get('view');
+		$this->model = Registry::get('model');
 	}
 
 	/**

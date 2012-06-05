@@ -8,6 +8,7 @@
  * @link		http://jream.com
  */
 namespace jream\MVC;
+use \jream\Registry;
 class Model
 {
 
@@ -19,7 +20,7 @@ class Model
 	*/
 	public function __construct()
 	{
-		$this->db = \jream\Registry::get('db');
+		$this->db = Registry::get('db');
 	}
 	
 }
