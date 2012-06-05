@@ -30,10 +30,17 @@ class View
 	 * render - Render a template
 	 *
 	 * @param string $name The name of the page, eg: index/default
+	 * @param mixed $viewValues Associative Array or Object, values to pass into the view
 	 */
-	public function render($name)
+	public function render($name, $viewValues = array())
 	{
 		$this->_viewQueue[] = $name;
+		
+		/** Set variables to use in the view */
+		foreach($viewValues as $key => $value) 
+		{
+			$this->{$key} = $value;
+		}
 	}
 	
 	/**
