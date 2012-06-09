@@ -38,7 +38,7 @@ class Output
 	 * 
 	 * @param string $errorMessage 
 	 */
-	public function error($errorMessage = null)
+	public static function error($errorMessage = null)
 	{
 		header('Content-type: application/json');
 		echo json_encode(array('success' => 0, 'errorMessage' => $errorMessage, 'data' => null));
