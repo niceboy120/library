@@ -26,6 +26,11 @@ class Form
 	 * @var object $_file The file object. Only instantiated if the method is called.
 	 */
 	private $_file = false;
+	
+	/**
+	 * @var string $_fileField If a file is uploaded this is stored as a reference to create a record inside formName inside the submit() method
+	 */
+	private $_fileField;
 		
 	/** 
 	 * @var array $_formData Holds the POSTED data inside the object for post-processing 
@@ -201,28 +206,29 @@ class Form
 	 * 
 	 * @param string $name The name of the field you are saving
 	 * @param string $directory The directory location
+	 * @param boolean $required (Default: false) Is this field required?
 	 * @param string $saveAs (Default: false) The name to save the file path, include the extension. (false uses the original file name)
 	 * @param boolean $overwrite (Default: true) Overwrite the file if it exists? 
 	 * 
 	 * @return object
 	 */
-	public function file($name, $directory, $saveAs = false, $overwrite = true, $required = false)
+	public function file($name, $directory, $required = false, $saveAs = false, $overwrite = true)
 	{
 		/** Instantiate the file class only if it's used */
 		if ($this->_file == false)
 		$this->_file = new Form\File();
 		
+		/** Store the filename so we can set it in the submit method */
+		$this->_fileField = $name;
+		
 		try {
 			
-			if ($required == true && ($_FILES[$name]['error'] != 0))
-			{
-				$this->_errorData[$name] = 'file upload is required';
-			}
+			if ($required == true && empty($_FILES))
+			throw new \jream\Exception('file upload is required');
+
 			else
-			{
-				/** This does not upload the file yet, it checks for errors, upload happens if there are no standard form errors on submit() */
-				$this->_file->uploadPrepare($name, $directory, $saveAs, $overwrite); // Exception
-			}		
+			/** This does not upload the file yet, it checks for errors, upload happens if there are no standard form errors on submit() */
+			$this->_file->uploadPrepare($name, $directory, $saveAs, $overwrite); // Exception
 			
 		} catch(\jream\Exception $e) {
 			/** The $name is unique within a form, so an error can be set here with no worries */
@@ -275,7 +281,8 @@ class Form
 			if ($this->_file != false) 
 			{
 				/** If the file is at this point, it had no problems with the requirement standards or any other errors */
-				$this->_file->uploadSave();
+				$filename = $this->_file->uploadSave();
+				$this->_formData[$this->_fileField] = $filename;
 			}
 			
 			return false;

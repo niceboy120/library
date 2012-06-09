@@ -23,13 +23,13 @@ class File
 	
 	/** @var boolean $_overwrite To overwrite a file if it exists */
 	private $_overwrite = true;
-	
-	
+		
 	/**
 	 * uploadPrepare - Prepares a file for upload
 	 * 
 	 * @param string $name The form name value to post
 	 * @param string $directory The directory to save to
+	 * @param string $required Is this file required
 	 * @param string $saveAs (Default: false) Set a name to save it as a custom name (Extension will be automatically added)
 	 * 
 	 * @return boolean
@@ -38,16 +38,15 @@ class File
 	 */
 	public function uploadPrepare($name, $directory, $saveAs = false, $overwrite = true)
 	{
-		if (!isset($_FILES)) {
-			return false;
-		}
+		if (!isset($_FILES) || empty($_FILES)) 
+		return false;
 		
 		/**
 		 * Set the class-wide properties 
 		 */
 		$this->_name = $name;
 		$this->_directory = trim($directory, '/') . '/';
-		$this->_saveAs = $saveAs;
+		$this->_saveAs = ($saveAs == true) ? $saveAs : $_FILES[$name]['name'];
 		$this->_overwrite = $overwrite;
 
 		/**
@@ -100,9 +99,11 @@ class File
 	 */
 	public function uploadSave()
 	{
+		if (!isset($_FILES) || empty($_FILES)) 
+		return false;
+
 		$result = move_uploaded_file($_FILES[$this->_name]['tmp_name'], $this->_directory . $this->_saveAs);
-		
-		return $result;
+		return $this->_saveAs;
 	}
 	
 }
