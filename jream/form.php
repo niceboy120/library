@@ -102,6 +102,15 @@ class Form
 			$this->_currentRecord = null;
 			return $this;
 		}
+
+		/**
+		 * If the field is required and empty
+		 * Mark the error field is required 
+		 */
+		if ($required == true && $input == null)
+		{
+			$this->_errorData[$name] = 'is required';
+		}
 		
 		/**
 		 * Set a new record in this object 
