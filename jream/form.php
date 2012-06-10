@@ -233,7 +233,7 @@ class Form
 		try {
 			
 			if ($required == true && empty($_FILES))
-			throw new \jream\Exception('file upload is required');
+			throw new \jream\Exception('is required');
 
 			else
 			/** This does not upload the file yet, it checks for errors, upload happens if there are no standard form errors on submit() */
