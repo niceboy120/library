@@ -95,7 +95,11 @@ class Bootstrap
 
 		/** Set the segments in the registry to it can be fetched from the Controller */
 		Registry::set('segments', $this->segments);
-		
+
+		/** Default the controller if one is not set in the URL */
+		if (!isset($this->_uriController))
+		$this->_uriController = $this->_controllerDefault;
+
 		/** The order of these are important */
 		$this->_initPath();
 		$this->_initView();
@@ -172,11 +176,7 @@ class Bootstrap
 	 * _initController - Load the controller based on the URL 
 	 */
 	private function _initController() 
-	{
-		/** Default to the index controller if one is not set in the URL */
-		if (!isset($this->_uriController))
-		$this->_uriController = $this->_controllerDefault;
-		
+	{		
 		/** Make sure the actual controller exists */
 		if (file_exists($this->_pathController . $this->_uriController . '.php')) 
 		{
