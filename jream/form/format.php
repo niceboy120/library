@@ -218,4 +218,20 @@ class Format
 	{
 		return (string) $str;
 	}
+	
+	/**
+	 * slug - Formats to a URL friendly slug
+	 * 
+	 * @param string $str
+	 * 
+	 * @return string
+	 */
+	public function slug($str)
+	{
+		$str = strtolower($str);
+		$str = preg_replace('/[^a-z0-9_\s-]/', '', $str);
+		$str = preg_replace("/[\s-]+/", " ", $str);
+		$str = preg_replace("/[\s_]/", "-", $str);
+		return (string) $str;
+	}
 }

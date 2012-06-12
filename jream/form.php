@@ -145,6 +145,8 @@ class Form
 	{
 		/** I want this to override stuff */
 		$this->_formData[$name] = $value;
+		$this->_currentRecord['key'] = $name;
+		$this->_currentRecord['value'] = $value;
 		
 		return $this;
 	}
@@ -181,15 +183,15 @@ class Form
 	 */
 	public function validate($action, $param = array(), $option = null)
 	{
-		/** Instantiate the validate class only if it's used */
-		if ($this->_validate == false)
-		$this->_validate = new Form\Validate();
-		
 		/**
 		 * From the "post() method" if this is null then then this is not required.
 		 */
 		if ($this->_currentRecord == null) 
 		return $this;
+		
+		/** Instantiate the validate class only if it's used */
+		if ($this->_validate == false) 
+		$this->_validate = new Form\Validate();
 				
 		$key = $this->_currentRecord['key'];
 		$value = $this->_currentRecord['value'];
@@ -226,18 +228,24 @@ class Form
 		/** Instantiate the file class only if it's used */
 		if ($this->_file == false)
 		$this->_file = new Form\File();
-		
+				
 		/** Store the filename so we can set it in the submit method */
 		$this->_fileField = $name;
 		
 		try {
 			
 			if ($required == true && empty($_FILES))
-			throw new \jream\Exception('is required');
-
+			{
+				throw new \jream\Exception('is required');
+			}
 			else
-			/** This does not upload the file yet, it checks for errors, upload happens if there are no standard form errors on submit() */
-			$this->_file->uploadPrepare($name, $directory, $saveAs, $overwrite); // Exception
+			{
+				/** 
+				 * This does not upload the file yet, it checks for errors
+				 * upload happens if there are no standard form errors on submit() 
+				 */
+				$this->_file->uploadPrepare($name, $directory, $saveAs, $overwrite); // Exception
+			}
 			
 		} catch(\jream\Exception $e) {
 			/** The $name is unique within a form, so an error can be set here with no worries */
@@ -352,18 +360,5 @@ class Form
 		
 		return $this;
 	}
-	
-	/**
-	 * debug- Debug & see what is inside the object quickly
-	 */
-	public function debug()
-	{
-		echo '<pre>';
-		echo '$this->_formData' . "\n";
-		print_r($this->_formData);
-		echo "\n\n";
-		echo '$this->_errorData' . "\n";
-		print_r($this->_errorData);
-		echo '</pre>';
-	}
+
 }
