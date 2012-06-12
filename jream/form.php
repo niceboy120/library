@@ -80,7 +80,7 @@ class Form
 			
 			/** Note: Using jream Exception (Within jream namespace) */
 			else
-			throw new \jream\Exception('Passing a mimic value that is does not match in your Form posts'); 
+			throw new \jream\Exception('Passing a mimic value that does not match in your Form posts'); 
 		}
 		else
 		{
@@ -122,7 +122,7 @@ class Form
 		 */
 		$this->_currentRecord['key'] = &$name;
 		$this->_currentRecord['value'] = &$this->_formData[$name];
-
+				
 		return $this;
 	}
 	
@@ -145,8 +145,12 @@ class Form
 	{
 		/** I want this to override stuff */
 		$this->_formData[$name] = $value;
-		$this->_currentRecord['key'] = $name;
-		$this->_currentRecord['value'] = $value;
+			
+		/** 
+		 * Hold on to the immediate record incase validation is called next 
+		 */
+		$this->_currentRecord['key'] = &$name;
+		$this->_currentRecord['value'] = &$value;
 		
 		return $this;
 	}
