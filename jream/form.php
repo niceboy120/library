@@ -278,6 +278,22 @@ class Form
 
 	}
 	
+
+	/**
+	* setError - Set a custom error message for any field at anytime
+	* This will prevent me from throwing an exception and not having the other errors.
+	* 
+	* @param string $name Name of the field
+	* @param string $msg Error Message
+	* 
+	* @return object
+	*/
+	public function setError($name, $msg)
+	{
+		$this->_errorData[$name] = $msg;
+		return $this;
+	}
+    
 	/**
 	 * submit - Processes the entire form and gather errors if any exist
 	 *
