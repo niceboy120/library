@@ -21,13 +21,30 @@ class Format
 	 * 
 	 * @throws Exception Upon invalid function
 	 */
-	public function __call($call, $param)
+	public function __call($call, $unlimitedParams)
 	{
 		if (!function_exists($call))
 		throw new \jream\Exception(__CLASS__ . ": Invalid formatting: $call (Invalid Function)");
-		
-		else
-		return call_user_func($call, $param[0]);
+	
+		$args = func_get_args();
+		$param = $args[1];
+		/**
+		 * Count the arguments beyond the call 
+		 */
+		switch (count($param))
+		{
+			case 2:
+				return call_user_func($call, $param[0], $param[1]);
+				break;
+			case 3:
+				return call_user_func($call, $param[0], $param[1], $param[2]);
+				break;
+			case 4:
+				return call_user_func($call, $param[0], $param[1], $param[2], $param[3]);
+				break;
+			default:
+				return call_user_func($call, $param[0]);
+		}
 	}
 
 	/**
@@ -234,4 +251,23 @@ class Format
 		$str = preg_replace("/[\s_]/", "-", $str);
 		return (string) $str;
 	}
+	
+	/**
+	 * regex - Run a replacement with a regex pattern (preg_replace)
+	 * 
+	 * @param string $str
+	 * @param array $param The Regular Expression and Replacements
+	 * 
+	 * @return string
+	 * 
+	 * @throws \jream\Exception 
+	 */
+	public function regex($str, $param)
+	{
+		if (count($param) != 2)
+		throw new \jream\Exception(__FUNCTION__ . ': $param must have two values: regex');
+				
+		return preg_replace($param[0], $param[1], $str);
+	}
+	
 }
