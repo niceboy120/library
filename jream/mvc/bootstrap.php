@@ -17,11 +17,6 @@ class Bootstrap
 	 * @var string $_controllerDefault The default controller to load
 	 */
 	private $_controllerDefault = 'index';
-
-	/**
-	 * @var array $segments The URI segments
-	 */
-	public $segments;
 	
 	/**
 	 * @var string $_uriController The controller to call
@@ -58,6 +53,16 @@ class Bootstrap
 	 */ 
 	private $_basePath;
 
+	/**
+	 * @var array $segments The URI segments
+	 */
+	public $segments;
+	
+	/**
+	 * @var string $path The ../ path count
+	 */
+	public $path;
+	
 	/** 
 	 * init - Initializes the bootstrap handler once ready
 	 */
@@ -92,9 +97,6 @@ class Bootstrap
 		
 			unset($uri);
 		}
-
-		/** Set the segments in the registry to it can be fetched from the Controller */
-		Registry::set('segments', $this->segments);
 
 		/** Default the controller if one is not set in the URL */
 		if (!isset($this->_uriController))
@@ -163,13 +165,11 @@ class Bootstrap
 	private function _initPath()
 	{
 		/** Create the "../" path for convenience */
-		$path = '';
+		$this->path = '';
 		for ($i = 1; $i < count($this->segments); $i++) 
 		{
-			$path .= '../';
+			$this->path .= '../';
 		}
-		Registry::set('path', $path);
-		unset($path);
 	}
 	
 	/** 
