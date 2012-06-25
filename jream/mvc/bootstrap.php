@@ -8,7 +8,7 @@
  * @link		http://jream.com
  */
 namespace jream\MVC;
-use \jream\Registry;
+use jream\Registry;
 
 class Bootstrap 
 {
@@ -54,59 +54,85 @@ class Bootstrap
 	private $_basePath;
 
 	/**
-	 * @var array $segments The URI segments
+	 * @var string $uri The URI string
 	 */
-	public $segments;
+	public $uri;
 	
 	/**
-	 * @var string $path The ../ path count
+	 * @var array $uriSegments Each URI segment in an array
 	 */
-	public $path;
+	public $uriSegments;
 	
-	/** 
-	 * init - Initializes the bootstrap handler once ready
+	/**
+	 * @var string $downPath The ../ path count
 	 */
-	public function init() 
-	{
-		if (!isset($this->_pathRoot)) 
-		die('You must run setPathRoot($path)');
+	public $uriSlashPath;
 
-		/** The segments of the URI */
-		$this->segments = '';
-		
+	/**
+	 * __construct - Get the URL and prepare the internal data
+	 * 
+	 * This is prepared so a route check can happen before things are initialized
+	 */
+	public function __construct()
+	{
 		if (isset($_GET['url']))
-		{	
+		{
 			/** Prevent the slash from breaking the array below */
 			$uri = rtrim($_GET['url'], '/');
 			
 			/** Prevent a null-byte from going through */
 			$uri = filter_var($uri, FILTER_SANITIZE_URL);
-			
-			/** Break up the URL */
-			$uri = explode('/', $uri);
-			
-			/** Store the segments */
-			$this->segments = $uri;
-			
-			/** Grab Controller and Optional Method */
-			$this->_uriController = ucwords($uri[0]); // Make sure its matches naming ie: Index_Controller
-			$this->_uriMethod = (isset($uri[1])) ? strtolower($uri[1]) : NULL;
-
-			/** Grab the urlValues beyond the point of controller/method/ */
-			$this->_uriValue = array_splice($uri, 2);
-		
-			unset($uri);
 		}
+		/** Set the string URI */
+		$this->uri = (isset($uri)) ? $uri : '';
+	}
+	
+	/** 
+	 * init - Initializes the bootstrap handler once ready
+	 * 
+	 * @param boolean|string $overrideUri 
+	 */
+	public function init($overrideUri = false) 
+	{
+		if (!isset($this->_pathRoot)) 
+		die('You must run setPathRoot($path)');
 
-		/** Default the controller if one is not set in the URL */
-		if (!isset($this->_uriController))
-		$this->_uriController = $this->_controllerDefault;
-
+		/** When a route overrides a URI we build the path here */
+		$urlToBuild = ($overrideUri == true) ? $overrideUri : $this->uri;
+		$this->_buildComponents($urlToBuild);
+		
 		/** The order of these are important */
-		$this->_initPath();
 		$this->_initView();
 		$this->_initModel();
 		$this->_initController();
+	}
+	
+	/**
+	 * _buildComponents - Sets up the pieces for the Controller, Model, Value
+	 * 
+	 * @param string $uri 
+	 */
+	private function _buildComponents($uri)
+	{
+		/** Break up the URL */
+		$uri = explode('/', $uri);
+		
+		/** Store the segments */
+		$this->uriSegments = $uri;
+		
+		$this->_initUriSlashPath($uri);
+		
+		
+		/** Grab Controller and Optional Method */
+		$this->_uriController = ucwords($uri[0]); // Make sure its matches naming ie: Index_Controller
+		$this->_uriMethod = (isset($uri[1])) ? strtolower($uri[1]) : NULL;
+
+		/** Grab the urlValues beyond the point of controller/method/ */
+		$this->_uriValue = array_splice($uri, 2);
+		
+		/** Default the controller if one is not set in the URL */
+		if (!isset($this->_uriController) || empty($this->_uriController))
+		$this->_uriController = $this->_controllerDefault;
 	}
 	
 	/**
@@ -160,15 +186,19 @@ class Bootstrap
 	}
 	
 	/**
-	 * _initPath - Sets up the dot dot slash path length
+	 * _initUriSlashPath - Sets up the dot dot slash path length
 	 */
-	private function _initPath()
+	private function _initUriSlashPath()
 	{
 		/** Create the "../" path for convenience */
-		$this->path = '';
-		for ($i = 1; $i < count($this->segments); $i++) 
+		$this->uriSlashPath = '';
+		
+		/** The real segments (Not the overriden one) */
+		$realSegments = explode('/', $this->uri);
+		
+		for ($i = 1; $i < count($realSegments); $i++) 
 		{
-			$this->path .= '../';
+			$this->uriSlashPath .= '../';
 		}
 	}
 	
@@ -176,7 +206,7 @@ class Bootstrap
 	 * _initController - Load the controller based on the URL 
 	 */
 	private function _initController() 
-	{		
+	{
 		/** Make sure the actual controller exists */
 		if (file_exists($this->_pathController . $this->_uriController . '.php')) 
 		{
@@ -228,7 +258,7 @@ class Bootstrap
 		}
 		else 
 		{
-			die(__CLASS__ . ': error (non-existant controller)');
+			die(__CLASS__ . ': error (non-existant controller): ' . $this->_uriController);
 		}
 	}
 	

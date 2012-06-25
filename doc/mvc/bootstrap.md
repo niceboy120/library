@@ -7,15 +7,20 @@ To run the MVC pattern you begin with an empty file utilizing the bootstrap:
     require_once 'jream/autoload.php';
 
     new jream\Autoload('jream/');
-    
+
+
     $bootstrap = new jream\MVC\Bootstrap();
     
+	// Always set the Path Root
+	$bootstrap->setPathRoot(getcwd());
     // Optional: Default is controller
     $bootstrap->setPathController('controller/');
     // Optional: Default is model
     $bootstrap->setPathModel('model/');
     // Optional: Default is view
     $bootstrap->setPathView('view/');
+	// Optional: Set the default controller (Default is: index)
+	$bootstrap->setControllerDefault('home');
     // Run the Bootstrap
     $bootstrap->init();
     
@@ -37,6 +42,23 @@ For clean URL's with mod_rewrite you might want an .htaccess file with
     RewriteCond %{REQUEST_FILENAME} !-l
 
     RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+	
+
+To build custom routes use the route class
+
+	$route = new Route(array(
+		'category/*' => 'view/category/*',
+		'file/*' => 'view/file/*',
+	));
+	new jream\Autoload('jream/');
+	$bootstrap = new jream\MVC\Bootstrap();
+	$reroute = $route->match($bootstrap->uri);
+	$bootstrap->setPathRoot(getcwd());
+    $bootstrap->setPathController('controller/');
+    $bootstrap->setPathModel('model/');
+    $bootstrap->setPathView('view/');
+	$bootstrap->setControllerDefault('home');
+	$bootstrap->init($reroute);
 
 ***
 
